@@ -46,4 +46,9 @@ def play(pid):
 		return 'ADD play {}'.format(pid)
 	elif request.method == 'DELETE':
 		return 'DELETE play {}'.format(pid)
-app.run(port=9111, debug=True)
+
+def main():
+	app.run(port=9111, debug=True)
+
+if __name__=='__main__':
+	main()
