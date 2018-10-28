@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+<style>
+    tr:nth-child(even) { background-color: #d8d8d8;}
+    
+    tr:hover {background-color:#f5f5f5;}
+    
+    </style>
+
+
+<html lang="en">
+    <head>
+        <link href="{{url_for('static', filename='bootstrap.min.css')}}" rel="stylesheet">
+        <title>Players</title>
+        </head>
+    
+    <body>
+        
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+            <div class="container">
+                <a class="navbar-brand" href="#">ControlAltDefeat</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{{url_for('home')}}">Home
+                                <span class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{url_for('players')}}">Players</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{url_for('events')}}">Events</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{url_for('plays')}}">Plays</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container">
+            <br><h4>players.html</h4><br>
+            <h5><u>Players</h5></u>
+            
+            <!-- testing render_template
+             {%if result%}
+             <b><br>WORKED:  {{result}}</b>
+             {%else%}
+             <b><br>FAILED</b><br>
+             {%endif%} -->
+            
+            <br>
+            <table id="players" align="center" style="width:90%" border = 1>
+                
+                {% if result %}
+                <tr>
+                    <th>Player Name</th>
+                    <th>Position</th>
+                    <th>Player Tag</th>
+                </tr>
+                
+                {% for row in result %}
+                <tr>
+                    <td>{{row["PlayerName"]}}</td>
+                    <td>{{row["Position"]}}</td>
+                    <td> {{ row["PlayerTag"]}}</td
+                    
+                </tr>
+                {% endfor %}
+                {% endif %}
+            </table><br>
+            
+            <form action = "{{ url_for('players') }}" method = "POST">
+                <h5><u>Insert New Player</h5></u>
+                Player Name<br>
+                <input id="PlayerName" type = "text" name = "PlayerName" /></br>
+                
+                Position<br>
+                <input id="Position" type = "text" name = "Position" /></br>
+                
+                Player Tag<br>
+                <input id="PlayerTag" type = "text" name = "PlayerTag" /><br>
+                <input type = "submit" value = "submit" /><br>
+            </form>
+            
+            
+            <script src="../static/jquery.min.js"></script>
+            <script src="../static/bootstrap.bundle.min.js"></script>
+            
+            </body>
+    
+    <!--    <br><br><i>referenced: https://www.tutorialspoint.com/flask/flask_sqlite.html<br>-->
+    <!--        https://github.com/jmcguinness11/ControlAltDefeat/blob/master/server.py</i>-->
+    
+    </div>
+</html>
