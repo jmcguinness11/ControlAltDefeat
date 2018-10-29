@@ -2,9 +2,10 @@ from flask import *
 import json
 app = Flask(__name__)
 
+
 @app.route("/")
 def main():
-    return None
+    return "main"
 
 @app.route("/home")
 def home():
