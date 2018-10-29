@@ -4,34 +4,51 @@ DROP TABLE Events;
 DROP TABLE Plays;
 
 CREATE TABLE Players(
-	number INT PRIMARY KEY,
 	name CHAR(50),
-	position CHAR(50)
+	position CHAR(5),
+	playerTag CHAR(10) PRIMARY KEY,
+	height INT,
+	weight INT,
+	active INT DEFAULT 1
 );
 
 CREATE TABLE Events(
 	id INT PRIMARY KEY,
-	date DATE,
-	opponent CHAR(50),
-	isPractice BOOLEAN
+	game CHAR(100),
+	playNum INT,
+	quarter INT,
+	series INT,
+	seriesSeq INT,
+	seriesEnd INT,
+	active INT DEFAULT 1
 );
 
 CREATE TABLE Plays(
-	id INT PRIMARY KEY,
+	id INT PRIMARY KEY AUTO_INCREMENT,
 	event_id INT REFERENCES Events(id),
-	player1_number INT,
-	player2_number INT,
-	name CHAR(50),
-	type CHAR(50),
-	quarter INT,
+	pff_QB CHAR(10),
+	pff_BALLCARRIER CHAR(10),
+	pff_PASSRECTARGET CHAR(10),
+	genFormation CHAR(20),
+	genPlay CHAR(20),
 	down INT,
-	distance INT,
-	isWin BOOLEAN,
-	yards_after_contact INT,
-	yards_after_catch INT,
-	pass_result INT,
-	pass_depth INT,
-	protection INT, 
-	passing_map INT,
-	backfield INT
+	dist INT,
+	rp CHAR(1),
+	fieldPos INT,
+	gain INT,
+	explosive CHAR(1),
+	result CHAR(10),
+	winP CHAR(1),
+	pff_YARDSAFTERCONTACT INT,
+	pff_YARDSAFTERCATCH INT,
+	pff_PASSRESULT CHAR(20),
+	pff_PASSDEPTH INT,
+	passingMap CHAR(1),
+	protection CHAR(20),
+	backfield CHAR(5),
+	motion_shift CHAR(20),
+	active INT DEFAULT 1,
+	FOREIGN KEY (pff_QB) REFERENCES Players(playerTag), 
+	FOREIGN KEY (pff_BALLCARRIER) REFERENCES Players(playerTag), 
+	FOREIGN KEY (pff_PASSRECTARGET) REFERENCES Players(playerTag)
 );
