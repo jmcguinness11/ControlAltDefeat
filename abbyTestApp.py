@@ -38,4 +38,4 @@ def players():
         return render_template('players.html', t="ABBY", result=r, content_type='application/json')
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=5011, host='0.0.0.0')
