@@ -1,14 +1,13 @@
-
-DROP TABLE Players;
 DROP TABLE Events;
 DROP TABLE Plays;
+DROP TABLE Players;
 
 CREATE TABLE Players(
 	name CHAR(50),
 	position CHAR(5),
 	playerTag CHAR(10) PRIMARY KEY,
-	height INT,
-	weight INT,
+	height INT DEFAULT NULL,
+	weight INT DEFAULT NULL,
 	active INT DEFAULT 1
 );
 
@@ -19,7 +18,7 @@ CREATE TABLE Events(
 	quarter INT,
 	series INT,
 	seriesSeq INT,
-	seriesEnd INT,
+	seriesEnd CHAR(20),
 	active INT DEFAULT 1
 );
 
@@ -37,7 +36,7 @@ CREATE TABLE Plays(
 	fieldPos INT,
 	gain INT,
 	explosive CHAR(1),
-	result CHAR(10),
+	result CHAR(20),
 	winP CHAR(1),
 	pff_YARDSAFTERCONTACT INT,
 	pff_YARDSAFTERCATCH INT,
