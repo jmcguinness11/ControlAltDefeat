@@ -70,18 +70,31 @@
                 {% for row in result %}
                 
                 <!-- FORM TYPE: EDIT-->
+<!--                <form action = "{{ url_for('players') }}" method = "POST" id="edit">-->
+<!--                    <tr>-->
+<!--                        <td > {{row["name"]}}</td>-->
+<!--                        <td > {{row["position"]}}</td>-->
+<!--                        <td > {{ row["playerTag"]}}</td>-->
+<!--                        <td > {{ row["height"]}}</td>-->
+<!--                        <td > {{ row["weight"]}}</td>-->
+<!--                        <td > {{ row["active"]}}</td>-->
+<!--                        <td><input type = "submit" value = "Edit" /></td>-->
+<!--                    </tr>-->
+<!--                    <input type="hidden" name="form_type" value="EDIT">-->
+<!--                </form>-->
+
                 <form action = "{{ url_for('players') }}" method = "POST" id="edit">
                     <tr>
-                        <td > {{row["name"]}}</td>
-                        <td > {{row["position"]}}</td>
-                        <td > {{ row["playerTag"]}}</td>
-                        <td > {{ row["height"]}}</td>
-                        <td > {{ row["weight"]}}</td>
-                        <td > {{ row["active"]}}</td>
-                        <td><input type = "submit" value = "Edit" /></td>
+                        <td> <input style="border:none" type="text" name="name"     value='{{row["name"]}}' /> </td>
+                        <td> <input style="border:none" type="text" name="position" value='{{row["position"]}}' /> </td>
+                        <td> <input style="border:none" type="text" name="playerTag" value='{{row["playerTag"]}}' /> </td>
+                        <td> <input style="border:none" type="text" name="height"   value='{{row["height"]}}' /> </td>
+                        <td> <input style="border:none" type="text" name="weight"   value='{{row["weight"]}}' /> </td>
+                        <td> <input style="border:none" type="text" name="active"   value='{{row["active"]}}' /> </td>
+                        <td><input type = "submit" value = "Edit" />
                     </tr>
                     <input type="hidden" name="form_type" value="EDIT">
-                        </form>
+                </form>
                 
                 {% endfor %}
                 {% endif %}
