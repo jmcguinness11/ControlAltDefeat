@@ -2,10 +2,12 @@
 
 <style>
     tr:nth-child(even) { background-color: #d8d8d8;}
-    
+
     tr:hover {background-color:#f5f5f5;}
     
-    </style>
+    input.tableinput { border-width:0px;border:none;}
+    
+</style>
 
 
 <html lang="en">
@@ -55,6 +57,7 @@
              {%endif%} -->
             
             <br>
+            
             <table id="players" align="center" style="width:90%" border = 1>
                 
                 {% if result %}
@@ -62,32 +65,70 @@
                     <th>Player Name</th>
                     <th>Position</th>
                     <th>Player Tag</th>
+                    <th>Height</th>
+                    <th>Weight</th>
+                    <th>Active?</th>
                 </tr>
                 
                 {% for row in result %}
+                
+                <!-- FORM TYPE: EDIT-->
+                <form action = "{{ url_for('players') }}" method = "POST" id="edit">
                 <tr>
-                    <td>{{row["PlayerName"]}}</td>
-                    <td>{{row["Position"]}}</td>
-                    <td> {{ row["PlayerTag"]}}</td
-                    
+                    <td contenteditable="true"> {{row["name"]}}</td>
+                    <td contenteditable="true"> {{row["position"]}}</td>
+                    <td contenteditable="true"> {{ row["playerTag"]}}</td>
+                    <td contenteditable="true"> {{ row["height"]}}</td>
+                    <td contenteditable="true"> {{ row["weight"]}}</td>
+                    <td contenteditable="true"> {{ row["active"]}}</td>
+                    <td><input type = "submit" value = "Edit" /></td>
                 </tr>
+                <input type="hidden" name="form_type" value="EDIT">
+                </form>
+
                 {% endfor %}
                 {% endif %}
+
             </table><br>
             
-            <form action = "{{ url_for('players') }}" method = "POST">
+            <!-- FORM TYPE: INSERT-->
+            <fieldset>
+            <form action = "{{ url_for('players') }}" method = "POST" id="add">
                 <h5><u>Insert New Player</h5></u>
                 Player Name<br>
-                <input id="PlayerName" type = "text" name = "PlayerName" /></br>
+                <input id="name" type = "text" name = "name" /></br>
                 
                 Position<br>
-                <input id="Position" type = "text" name = "Position" /></br>
+                <input id="position" type = "text" name = "position" /></br>
                 
                 Player Tag<br>
-                <input id="PlayerTag" type = "text" name = "PlayerTag" /><br>
-                <input type = "submit" value = "submit" /><br>
+                <input id="playerTag" type = "text" name = "playerTag" /><br>
+                
+                Height<br>
+                <input id="height" type = "text" name = "height" /><br>
+                
+                Weight<br>
+                <input id="weight" type = "text" name = "weight" /><br>
+                
+                Active?<br>
+                <input id="active" type = "text" name = "active" /><br>
+                
+                <input type ="submit" value = "Submit" /><br>
+                <input type="hidden" name="form_type" value="INSERT">
             </form>
+            </fieldset>
             
+            <!-- FORM TYPE: DELETE (by playerTag)-->
+            <br>
+            <h5><u>Remove a Player</h5></u>
+            <br>
+            <form action = "{{ url_for('players') }}" method = "POST" id="delete">
+                {% for row in result %}
+                <input type="radio" name="deletePlayer" value={{row["playerTag"]}}/> <label for={{row["playerTag"]}}> {{row["name"]}}</label><br>
+                {% endfor %}
+                <input type ="submit" value = "Submit" /><br>
+                <input type="hidden" name="form_type" value="DELETE">
+            </form>
             
             <script src="../static/jquery.min.js"></script>
             <script src="../static/bootstrap.bundle.min.js"></script>
