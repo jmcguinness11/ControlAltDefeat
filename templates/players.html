@@ -2,19 +2,23 @@
 
 <style>
     tr:nth-child(even) { background-color: #d8d8d8;}
-
+    
     tr:hover {background-color:#f5f5f5;}
     
     input.tableinput { border-width:0px;border:none;}
     
+    .column {
+        float: left;
+        width: 50%;
+    }
+    
 </style>
-
 
 <html lang="en">
     <head>
         <link href="{{url_for('static', filename='bootstrap.min.css')}}" rel="stylesheet">
-        <title>Players</title>
-        </head>
+            <title>Players</title>
+            </head>
     
     <body>
         
@@ -48,14 +52,6 @@
         <div class="container">
             <br><h4>players.html</h4><br>
             <h5><u>Players</h5></u>
-            
-            <!-- testing render_template
-             {%if result%}
-             <b><br>WORKED:  {{result}}</b>
-             {%else%}
-             <b><br>FAILED</b><br>
-             {%endif%} -->
-            
             <br>
             
             <table id="players" align="center" style="width:90%" border = 1>
@@ -68,75 +64,79 @@
                     <th>Height</th>
                     <th>Weight</th>
                     <th>Active?</th>
+                    <th></th>
                 </tr>
                 
                 {% for row in result %}
                 
                 <!-- FORM TYPE: EDIT-->
                 <form action = "{{ url_for('players') }}" method = "POST" id="edit">
-                <tr>
-                    <td contenteditable="true"> {{row["name"]}}</td>
-                    <td contenteditable="true"> {{row["position"]}}</td>
-                    <td contenteditable="true"> {{ row["playerTag"]}}</td>
-                    <td contenteditable="true"> {{ row["height"]}}</td>
-                    <td contenteditable="true"> {{ row["weight"]}}</td>
-                    <td contenteditable="true"> {{ row["active"]}}</td>
-                    <td><input type = "submit" value = "Edit" /></td>
-                </tr>
-                <input type="hidden" name="form_type" value="EDIT">
-                </form>
-
+                    <tr>
+                        <td > {{row["name"]}}</td>
+                        <td > {{row["position"]}}</td>
+                        <td > {{ row["playerTag"]}}</td>
+                        <td > {{ row["height"]}}</td>
+                        <td > {{ row["weight"]}}</td>
+                        <td > {{ row["active"]}}</td>
+                        <td><input type = "submit" value = "Edit" /></td>
+                    </tr>
+                    <input type="hidden" name="form_type" value="EDIT">
+                        </form>
+                
                 {% endfor %}
                 {% endif %}
-
+                
             </table><br>
             
+            <div class = "container">
+            <div class="column">
             <!-- FORM TYPE: INSERT-->
             <fieldset>
-            <form action = "{{ url_for('players') }}" method = "POST" id="add">
-                <h5><u>Insert New Player</h5></u>
-                Player Name<br>
-                <input id="name" type = "text" name = "name" /></br>
-                
-                Position<br>
-                <input id="position" type = "text" name = "position" /></br>
-                
-                Player Tag<br>
-                <input id="playerTag" type = "text" name = "playerTag" /><br>
-                
-                Height<br>
-                <input id="height" type = "text" name = "height" /><br>
-                
-                Weight<br>
-                <input id="weight" type = "text" name = "weight" /><br>
-                
-                Active?<br>
-                <input id="active" type = "text" name = "active" /><br>
-                
-                <input type ="submit" value = "Submit" /><br>
-                <input type="hidden" name="form_type" value="INSERT">
-            </form>
+                <form action = "{{ url_for('players') }}" method = "POST" id="add">
+                    <br>
+                    <h5><u>Insert New Player</h5></u>
+                    Player Name<br>
+                    <input id="name" type = "text" name = "name" /></br>
+                    
+                    Position<br>
+                    <input id="position" type = "text" name = "position" /></br>
+                    
+                    Player Tag<br>
+                    <input id="playerTag" type = "text" name = "playerTag" /><br>
+                    
+                    Height<br>
+                    <input id="height" type = "text" name = "height" /><br>
+                    
+                    Weight<br>
+                    <input id="weight" type = "text" name = "weight" /><br>
+                    
+                    Active?<br>
+                    <input id="active" type = "text" name = "active" /><br>
+                    
+                    <input type ="submit" value = "Submit" /><br>
+                    <input type="hidden" name="form_type" value="INSERT">
+                        </form>
             </fieldset>
+            </div>
             
             <!-- FORM TYPE: DELETE (by playerTag)-->
+            <div class="column">
             <br>
             <h5><u>Remove a Player</h5></u>
             <br>
             <form action = "{{ url_for('players') }}" method = "POST" id="delete">
                 {% for row in result %}
-                <input type="radio" name="deletePlayer" value={{row["playerTag"]}}/> <label for={{row["playerTag"]}}> {{row["name"]}}</label><br>
+                <input type="radio" name="deletePlayer" value='{{row["playerTag"]}}' /> <label for='{{row["playerTag"]}}'> {{row["name"]}}</label><br>
                 {% endfor %}
                 <input type ="submit" value = "Submit" /><br>
                 <input type="hidden" name="form_type" value="DELETE">
             </form>
-            
+            </div>
+            </div>
             <script src="../static/jquery.min.js"></script>
             <script src="../static/bootstrap.bundle.min.js"></script>
             
             </body>
-    
-    <!--    <br><br><i>referenced: https://www.tutorialspoint.com/flask/flask_sqlite.html<br>-->
-    <!--        https://github.com/jmcguinness11/ControlAltDefeat/blob/master/server.py</i>-->
     
     </div>
 </html>

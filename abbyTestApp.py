@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def main():
-    return None
+    return render_template('index.html')
 
 @app.route("/home")
 def home():
@@ -34,12 +34,12 @@ def players():
         for record in r:
             if record["active"] == 1:
                 display.append(record)
-        return render_template('players.html', t="ABBY", result=display, content_type='application/json')
+        return render_template('players.html', result=display, content_type='application/json')
     
-    form = request.form.get("form_type") # options: edit, delete, insert
+    form = request.form.get("form_type") # hidden input to specify which form: edit, delete, insert
     print("FORM: " + form)
     
-    # EDIT
+    ### EDIT
     if form == "EDIT":
         print("ENTERED EDIT")
         name = request.form.get("name")
@@ -60,10 +60,10 @@ def players():
             if record["active"] == 1:
                 display.append(record)
 
-        return render_template('players.html', t="ABBY", result=display, content_type='application/json')
+        return render_template('players.html', result=display, content_type='application/json')
 
 
-    # INSERT - gets values from form
+    ### INSERT - gets values from form
     elif form == "INSERT":
         print("ENTERED INSERT")
         temp = {}
@@ -84,27 +84,27 @@ def players():
                 display.append(record)
         
         # update database here
-        return render_template('players.html', t="ABBY", result=display, content_type='application/json')
+        return render_template('players.html', result=display, content_type='application/json')
 
-    # DELETE players - update where playerTag = xxx
-    # if request.method == "POST" and form == "DELETE":
+    ### DELETE players - update where playerTag = xxx
     elif form == "DELETE":
         print("ENTERED DELETE")
         playerTag = request.form.get("deletePlayer")   # get playerTag of row to delete
-        print("PLAYERTAG: " + playerTag)
 
         for record in r:
-            print(record["playerTag"])
+            print(record["playerTag"] + " - " + record["name"] + " - " + str(record["active"]))
             if record["playerTag"] == str(playerTag):
                 record["active"] = 0                # set active to 0 to 'delete'
-                print("Player to delete: " + playerTag + ", " + record["name"]) # debug
+                # print("Player to delete: " + playerTag + ", " + record["name"]) # debug
         
         display = []
         for record in r:
             if record["active"] == 1:
                 display.append(record)
 
-        return render_template('players.html', t="ABBY", result=display, content_type='application/json')
+        return render_template('players.html', result=display, content_type='application/json')
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='5210', threaded=True)
+0', threaded=True)
