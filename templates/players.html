@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 
 <style>
-    tr:nth-child(even) { background-color: #d8d8d8;}
+   /* tr:nth-child(even) { background-color: #d8d8d8;}
     
-    tr:hover {background-color:#f5f5f5;}
+    tr:hover {background-color:#f5f5f5;}*/
     
     input.tableinput { border-width:0px;border:none;}
     
@@ -54,7 +54,7 @@
             <h5><u>Players</h5></u>
             <br>
             
-            <table id="players" align="center" style="width:90%" border = 1>
+            <table id="players" align="center" style="width:80%" border = 1>
                 
                 {% if result %}
                 <tr>
@@ -83,13 +83,13 @@
 <!--                    <input type="hidden" name="form_type" value="EDIT">-->
 <!--                </form>-->
 
-                <form action = "{{ url_for('players') }}" method = "POST" id="edit">
+                <form action = "{{ url_for('players') }}" method = "POST" id="edit" autocomplete="off">
                     <tr>
-                        <td> <input style="border:none" type="text" name="name"     value='{{row["name"]}}' /> </td>
-                        <td> <input style="border:none" type="text" name="position" value='{{row["position"]}}' /> </td>
-                        <td> <input style="border:none" type="text" name="playerTag" value='{{row["playerTag"]}}' /> </td>
-                        <td> <input style="border:none" type="text" name="height"   value='{{row["height"]}}' /> </td>
-                        <td> <input style="border:none" type="text" name="weight"   value='{{row["weight"]}}' /> </td>
+                        <td width="40%"> <input style="border:none" type="text" name="name"    value='{{row["name"]}}'/> </td>
+                        <td width="10%"> <input style="border:none" type="text" name="position" value='{{row["position"]}}' /> </td>
+                        <td width="20%"> <input style="border:none" type="text" name="playerTag" value='{{row["playerTag"]}}' required/> </td>
+                        <td width="10%"> <input style="border:none" type="text" name="height"   value='{{row["height"]}}' /> </td>
+                        <td width="10%"> <input style="border:none" type="text" name="weight"   value='{{row["weight"]}}' /> </td>
                         <td> <input style="border:none" type="text" name="active"   value='{{row["active"]}}' /> </td>
                         <td><input type = "submit" value = "Edit" />
                     </tr>
@@ -115,7 +115,7 @@
                     <input id="position" type = "text" name = "position" /></br>
                     
                     Player Tag<br>
-                    <input id="playerTag" type = "text" name = "playerTag" /><br>
+                    <input id="playerTag" type = "text" name = "playerTag" required/><br>
                     
                     Height<br>
                     <input id="height" type = "text" name = "height" /><br>
