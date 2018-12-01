@@ -14,7 +14,16 @@ RP_TOTALS_COLS = ['RP', 'PlayCount', 'PlayTotal', 'PlayPercent']
 RP_TOTALS_1_QUERY = "(SELECT Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, 100*count(Plays.rp)/max(tot.c) as PlayPercent FROM Plays, (select count(*) as c from Plays where genFormation != 'victory') tot, (select rp, count(*) as 'Wins'from Plays where winP like 'Y'group by rp) wins WHERE Plays.genFormation != 'victory' and Plays.down = 1 and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, 100*count(Plays.rp)/max(tot.c) as Percent FROM Plays, (select count(*) as c from Plays where genFormation != 'victory') tot WHERE Plays.genFormation != 'victory' and Plays.down = 1 and Plays.rp like 'N' GROUP BY Plays.rp) ;"
 
 RP_WINS_COLS = ['RP', 'WinCount', 'TotalRP', 'WinPercent']
-RP_WINS_1_QUERY = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', max(tot.c) as WinTotal, 100*count(Plays.rp)/max(tot.c) as WinPercentfrom Plays,(select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y' and Plays.down = 1) totwhere Plays.genFormation != 'victory' and Plays.down = 1 and Plays.winP like 'Y'group by Plays.rp;"
+RP_WINS_1_QUERY = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', max(tot.c) as WinTotal, 100*count(Plays.rp)/max(tot.c) as WinPercent from Plays,(select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y' and Plays.down = 1) tot where Plays.genFormation != 'victory' and Plays.down = 1 and Plays.winP like 'Y'group by Plays.rp;"
+
+# second and short
+
+# second and Long
+
+# third and short
+
+# third and long
+
 
 ############################################################
 
@@ -37,11 +46,13 @@ def queryFormatted(colNames, query):
     for row in result:
         row_dict = {}
         for k, col in enumerate(row):
-            if col:
+	    if col: 
+		#print(k, col)
                 col = str(col)
                 row_dict[colNames[k]] = col.decode('ascii', 'ignore').encode('ascii')
         res_list.append(row_dict)
     return res_list
+
 
 app = Flask(__name__)
 
@@ -64,20 +75,37 @@ def plays():
 @app.route("/reports", methods=['POST', 'GET'])
 def reports():
 
+    print("entered reports")
+
     if request.method == "GET": # load queries
         return render_template('events.html', result=[], content_type='application/json')
 
     # get dropdown option
     form = request.form.get("form_type")
-    if form == 'GENERATE_REPORT':
-        select = request.form.get("generateReport")
-        print("selected dropdown value" + str(select))
+    if request.method == "POST":
+        if form == 'GENERATE_REPORT':
+            select = request.form.get("selectReport")
 
+            print("selected dropdown value: " + str(select))
+            # run query based on dropdown value
+            if select == "totalRPN":
+                totalsResp = queryFormatted(RP_TOTALS_COLS, RP_TOTALS_1_QUERY)
+                winsResp = queryFormatted(RP_WINS_COLS, RP_WINS_1_QUERY)
+
+                print("\ntotals resp\n")
+                print(totalsResp)
+                print("\nwins resp\n")
+                print(winsResp)
+                print("\n")
+
+                COLS = RP_TOTALS_COLS + RP_WINS_COLS
+                return render_template('events.html', totals=totalsResp, wins=winsResp, cols=RP_TOTALS_COLS, content_type='application/json')
 
 
 @app.route("/players", methods=['POST', 'GET'])
 def players():
 
+    print("entered players")
     #r = dictionary returned from database query
     r = queryFormatted(PLAYER_COLS, PLAYERS_GET_QUERY)
     print(r)
