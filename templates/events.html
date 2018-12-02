@@ -87,24 +87,24 @@
 
             <br><br>
 
-            <table id="reportTable" align="center" style="width:80" border=1>
+            <table id="reportTable" align="center" border=1>
                 {% if cols %}
-                <tr>
-                {% for row in cols %}
-                <th>{{row}}</th>
-                {% endfor %}
-                </tr>
-
-                <tr>
-                {% if totals %}
-                {% for row in totals %}
-                    {% for i in row %}
-                        <td>{{row[i]}}</td>
+                    <tr>
+                    {% for row in cols %}
+                        <th>{{row}}</th>
                     {% endfor %}
                     </tr>
-                {% endfor %}
+                    <tr>
 
-                {% endif %}
+                    {% if data %}
+                        {% for row in data %}
+                            {% for i in row %}
+                                {% for j in i %}
+                                    <td>{{i[j]}}</td>
+                                {% endfor %}
+                            {% endfor %}</tr>
+                        {% endfor %}
+                    {% endif %}
                 {% endif %}
 
             </table>

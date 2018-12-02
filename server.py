@@ -2,6 +2,7 @@ from flask import *
 import json
 import MySQLdb
 import atexit
+import itertools
 
 #global variables for column names
 PLAYER_COLS = ['name', 'position', 'playerTag', 'height', 'weight', 'active']
@@ -14,7 +15,7 @@ RP_TOTALS_COLS = ['RP', 'PlayCount', 'PlayTotal', 'PlayPercent']
 RP_TOTALS_1_QUERY = "(SELECT Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, 100*count(Plays.rp)/max(tot.c) as PlayPercent FROM Plays, (select count(*) as c from Plays where genFormation != 'victory') tot, (select rp, count(*) as 'Wins'from Plays where winP like 'Y'group by rp) wins WHERE Plays.genFormation != 'victory' and Plays.down = 1 and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, 100*count(Plays.rp)/max(tot.c) as Percent FROM Plays, (select count(*) as c from Plays where genFormation != 'victory') tot WHERE Plays.genFormation != 'victory' and Plays.down = 1 and Plays.rp like 'N' GROUP BY Plays.rp) ;"
 
 RP_WINS_COLS = ['RP', 'WinCount', 'TotalRP', 'WinPercent']
-RP_WINS_1_QUERY = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', max(tot.c) as WinTotal, 100*count(Plays.rp)/max(tot.c) as WinPercent from Plays,(select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y' and Plays.down = 1) tot where Plays.genFormation != 'victory' and Plays.down = 1 and Plays.winP like 'Y'group by Plays.rp;"
+RP_WINS_1_QUERY = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', max(tot.c) as WinTotal, 100*count(Plays.rp)/max(tot.c) as WinPercent from Plays,(select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y' and Plays.down = 1) tot where Plays.genFormation != 'victory' and Plays.down = 1 and Plays.winP like 'Y'group by Plays.rp UNION ALL select '', '', '', '';"
 
 # second and short
 
@@ -46,7 +47,7 @@ def queryFormatted(colNames, query):
     for row in result:
         row_dict = {}
         for k, col in enumerate(row):
-	    if col: 
+	    if col:
 		#print(k, col)
                 col = str(col)
                 row_dict[colNames[k]] = col.decode('ascii', 'ignore').encode('ascii')
@@ -99,7 +100,9 @@ def reports():
                 print("\n")
 
                 COLS = RP_TOTALS_COLS + RP_WINS_COLS
-                return render_template('events.html', totals=totalsResp, wins=winsResp, cols=RP_TOTALS_COLS, content_type='application/json')
+                zipdata = zip(totalsResp, winsResp)
+                print(zipdata)
+                return render_template('events.html', data=zipdata, cols=COLS, content_type='application/json')
 
 
 @app.route("/players", methods=['POST', 'GET'])
