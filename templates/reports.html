@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <style>
-    tr:nth-child(even) { background-color: #d8d8d8;}
+tr:nth-child(even) { background-color: #d8d8d8;}
 
-    tr:hover {background-color:#f5f5f5;}*/
+tr:hover {background-color:#f5f5f5;}*/
 
-    input.tableinput { border-width:0px;border:none;}
+input.tableinput { border-width:0px;border:none;}
 
-    .column {
-        float: left;
-        width: 50%;
-    }
+.column {
+    float: left;
+    width: 50%;
+}
 </style>
 
 <html lang="en">
@@ -87,37 +87,47 @@
 
             <br><br>
 
+            {% if titles %}
+                <ul>
+                {% for title in titles %}
+                    <li>{{title}}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+            <br>
+
             <table id="reportTable" align="center" border=1>
+
                 {% if cols %}
                     <tr>
-                    {% for row in cols %}
-                        <th>{{row}}</th>
-                    {% endfor %}
-                    </tr>
-                    <tr>
-
-                    {% if data %}
-                        {% for row in data %}
-                            {% for i in row %}
-                                {% for j in i %}
-                                    <td>{{i[j]}}</td>
-                                {% endfor %}
-                            {% endfor %}</tr>
+                        {% for row in cols %}
+                            <th>{{row}}</th>
                         {% endfor %}
-                    {% endif %}
+                    </tr>
                 {% endif %}
 
 
-            </table>
+                            <tr>
+                                {% if data %}
+                                    {% for row in data %}
+                                        {% for i in row %}
+                                            {% for j in i %}
+                                                <td>{{i[j]}}</td>
+                                            {% endfor %}
+                                        {% endfor %}</tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </table>
 
-            <br><br><button>Download</button>
-        </body>
-    </div>
 
-    <!-- Bootstrap core JavaScript -->
-    <script src="../static/jquery.min.js"></script>
-    <script src="../static/bootstrap.bundle.min.js"></script>
+                <br><br><button>Download</button>
+            </body>
+        </div>
+
+        <!-- Bootstrap core JavaScript -->
+        <script src="../static/jquery.min.js"></script>
+        <script src="../static/bootstrap.bundle.min.js"></script>
 
 
 
-    </html>
+        </html>

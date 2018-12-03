@@ -18,13 +18,13 @@ SERIES_COLS = ['series']
 RP_TOTALS_COLS = ['RP', 'PlayCount', 'PlayTotal', 'PlayPercent']
 RP_WINS_COLS = ['RP', 'WinCount', 'TotalRP', 'WinPercent']
 
-TOTALS_QUERY_DOWNS = "(SELECT  Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, 100*count(Plays.rp)/max(tot.c) as PlayPercent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory' {0}) tot,  (select rp, count(*) as 'Wins'from Plays where winP like 'Y'group by rp) wins WHERE  Plays.genFormation != 'victory' {0} and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT  Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, 100*count(Plays.rp)/max(tot.c) as Percent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory' {0}) tot WHERE  Plays.genFormation != 'victory' and {0} and Plays.rp like 'N' GROUP BY Plays.rp);"
+TOTALS_QUERY_DOWNS = "(SELECT  Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, 100*count(Plays.rp)/max(tot.c) as PlayPercent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory' {0}) tot,  (select rp, count(*) as 'Wins'from Plays where winP like 'Y' group by rp) wins WHERE  Plays.genFormation != 'victory' {0} and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT  Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, 100*count(Plays.rp)/max(tot.c) as Percent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory' {0}) tot WHERE  Plays.genFormation != 'victory' {0} and Plays.rp like 'N' GROUP BY Plays.rp);"
 
 
 TOTALS_QUERY = "(SELECT  Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, 100*count(Plays.rp)/max(tot.c) as PlayPercent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory') tot,  (select rp, count(*) as 'Wins'from Plays where winP like 'Y'group by rp) wins WHERE  Plays.genFormation != 'victory' and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT  Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, 100*count(Plays.rp)/max(tot.c) as Percent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory') tot WHERE  Plays.genFormation != 'victory' and Plays.rp like 'N' GROUP BY Plays.rp) ;"
 
-
-WINS_QUERY_DOWNS = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', totalRP.Count as 'TotalRP', 100*count(Plays.rp)/totalRP.Count as WinPercent from Plays, (select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y' {0}) tot, (select Plays.rp, count(Plays.rp) as Count from Plays where Plays.genFormation != 'victory' {0} and Plays.rp != 'N' group by Plays.rp) totalRP where Plays.genFormation != 'victory' {0} and Plays.winP like 'Y' and totalRP.rp = Plays.rp group by Plays.rp UNION ALL select '', '','', '';"
+# for sitrp
+WINS_QUERY_DOWNS = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', totalRP.Count as 'TotalRP', 100*count(Plays.rp)/totalRP.Count as WinPercent from Plays, (select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y' {0}) tot, (select Plays.rp, count(Plays.rp) as Count from Plays where Plays.genFormation != 'victory' {0} and Plays.rp != 'N' group by Plays.rp) totalRP where Plays.genFormation != 'victory' {0} and Plays.winP like 'Y' and totalRP.rp = Plays.rp group by Plays.rp UNION ALL select '-' as RP, '-' as WinCount,'-' as TotalRP, '-' as WinPercent;"
 
 WINS_QUERY = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', totalRP.Count as 'TotalRP', 100*count(Plays.rp)/totalRP.Count as WinPercent from Plays, (select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y') tot, (select Plays.rp, count(Plays.rp) as Count from Plays where Plays.genFormation != 'victory'and Plays.rp != 'N' group by Plays.rp) totalRP where Plays.genFormation != 'victory' and Plays.winP like 'Y' and totalRP.rp = Plays.rp group by Plays.rp UNION ALL select '-' as RP,'-' as WinCount,'-' as TotalRP,'-' as WinPercent;"
 
@@ -142,9 +142,8 @@ def reports():
 
                 COLS = RP_TOTALS_COLS + RP_WINS_COLS
                 zipdata = zip(totalsResp, winsResp)
-                display = 'display'
 
-                return render_template('reports.html', data=zipdata, display=display, cols=COLS, content_type='application/json')
+                return render_template('reports.html', data=zipdata, cols=COLS, content_type='application/json')
 
 
 
@@ -152,28 +151,71 @@ def reports():
             elif select == 'sitRP': # FIRST DOWN
                 print("####### SECOND AND SHORT #######")
 
-                titles = ["First Down", "Second and Short"]
+                titles = ["First Down", "Second and Short (1-3)", "Second and Mid (4-6)", "Second and Long (7-10)", "Second and 11+", "Third and Short (1-2)", "Third and 3", "Third and Mid (4-6)", "Third and Long (7-10)", "Third and 11+"]
 
-                FIRST_TOTALS = TOTALS_QUERY.format("and Plays.down = 1")
-                FIRST_WINS = SECOND_SHORT_WINS_QUERY.format("and Plays.down = 1")
-                first_totals_resp = queryFormatted(RP_TOTALS_COLS, FIRST_TOTALS)
-                first_wins_resp = queryFormatted(RP_TOTALS_COLS, FIRST_WINS)
+		# first down
+                first_totals_resp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 1") )
+                first_wins_resp = queryFormatted(RP_TOTALS_COLS,WINS_QUERY_DOWNS.format("and Plays.down = 1") )
 
-                SECOND_SHORT_TOTALS = TOTALS_QUERY.format("and Plays.down = 2 and Plays.dist >= 1 and Plays.dist <= 3")
-                SECOND_SHORT_WINS = SECOND_SHORT_WINS_QUERY.format("and Plays.down = 2 and Plays.dist >= 1 and Plays.dist <= 3")
-                second_short_totalsResp = queryFormatted(RP_TOTALS_COLS, SECOND_SHORT_TOTALS)
-                second_short_winsResp = queryFormatted(RP_WINS_COLS, SECOND_SHORT_WINS)
+		# second and short 1-3
+                second_short_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 1 and Plays.dist <= 3"))
+                second_short_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 1 and Plays.dist <= 3"))
 
-                print("\ntotals resp\n")
-                print(totalsResp)
-                print("\nwins resp\n")
-                print(winsResp)
-                print("\n")
+		# second and 4-6
+                second_mid_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 4 and Plays.dist <= 6"))
+                second_mid_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 4 and Plays.dist <= 6"))
+
+		# second and 7-10
+                second_long_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 7 and Plays.dist <= 10"))
+                second_long_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 7 and Plays.dist <= 10"))
+
+		# second and 11+
+                second_11_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 11"))
+                second_11_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 11"))
+
+		#  third and short 1-2
+                third_short_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 3 and Plays.dist >= 1 and Plays.dist <= 2"))
+                third_short_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 3 and Plays.dist >= 1 and Plays.dist <= 2"))
+
+		# third and 3
+                third_3_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist = 3"))
+                third_3_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist = 3"))
+
+		# third and 4-6
+                third_mid_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 4 and Plays.dist <= 6"))
+                third_mid_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 4 and Plays.dist <= 6"))
+
+		# third and 7-10
+                third_long_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 7 and Plays.dist >= 7 and Plays.dist <=10"))
+                third_long_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 7 and Plays.dist <=10"))
+
+		# third and 11+
+                third_11_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 7 and Plays.dist >= 11"))
+                third_11_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 11"))
+
+
+        	# zip data
+        	first_zip = zip(first_totals_resp, first_wins_resp)
+
+        	second_short_zip = zip(second_short_totalsResp, second_short_winsResp)
+        	second_mid_zip = zip(second_mid_totalsResp, second_mid_winsResp)
+        	second_long_zip = zip(second_long_totalsResp, second_long_winsResp)
+        	second_11_zip = zip(second_11_totalsResp, second_11_winsResp)
+
+		third_short_zip = zip(third_short_totalsResp, third_short_winsResp)
+		third_3_zip = zip(third_3_totalsResp, third_3_winsResp)
+		third_mid_zip = zip(third_mid_totalsResp, third_mid_winsResp)
+		third_long_zip = zip(third_long_totalsResp, third_long_winsResp)
+		third_11_zip = zip(third_11_totalsResp, third_11_winsResp)
+
 
                 COLS = RP_TOTALS_COLS + RP_WINS_COLS
-                zipdata = zip(totalsResp, winsResp)
+        	
+		# concatenate all reports
+        	data = [({'title': titles[0]})] + first_zip + [({'title': titles[1]})]  +  second_short_zip +  [({'title': titles[2]})]  +  second_mid_zip +  [({'title': titles[3]})]  +  second_long_zip +  [({'title': titles[4]})]  +  second_11_zip + [({'title': titles[5]})]  +  third_short_zip + [({'title': titles[6]})]  +  third_3_zip + [({'title': titles[7]})]  +  third_mid_zip + [({'title': titles[8]})]  +  third_long_zip + [({'title': titles[9]})]  +  third_11_zip 
+ 
 
-                return render_template('reports.html', data=zipdata, cols=COLS, titles=titles, content_type='application/json')
+                return render_template('reports.html', data=data, cols=COLS, titles=titles, content_type='application/json')
 
             elif select == 'motions':
                 print("####### MOTIONS #######")
@@ -277,4 +319,4 @@ def players():
 
 if __name__ == "__main__":
     atexit.register(exitFunc, db=db)
-    app.run(host='0.0.0.0', port='5212', threaded=True)
+    app.run(host='0.0.0.0', port='5210', threaded=True)
