@@ -64,8 +64,36 @@
 		{% endif %}
 
             {% if data %}
+	    <table id="legend" align="center" style="width:40%" border = 1>
+	    	<tr> 
+		   <th>Range</th>
+		   <th>Color</th>
+		</tr>
+		<tr>
+		    <td>gain &lt= -5</td>
+		    <td style="background-color: rgb(255, 0, 0)">Red</td>
+		</tr>
+		<tr>
+		    <td>-4 &lt= gain &lt= -1</td>
+		    <td style="background-color: rgb(255, 204, 204)">Varying light reds</td>
+		</tr>
+		<tr>
+		    <td>gain = 0</td>
+		    <td style="background-color: rgb(205, 201, 201)">Gray</td>
+		</tr>
+		<tr>
+		    <td>1 &gt= gain &gt= 9</td>
+		    <td style="background-color: rgb(128, 255, 128)">Varying light greens</td>
+		</tr>
+		<tr>
+		    <td>gain &gt= 10</td>
+		    <td style="background-color: rgb(0, 255, 0)">Green</td>
+		</tr>
+	    </table>
 
-            <table id="drives" align="center" style="width:80%" border = 1>
+	    <br>
+
+            <table id="drives" align="center"  style="width:80%" border = 1>
 
                 <tr>
                     <th>Series</th>
@@ -85,7 +113,7 @@
 
                     <tr>
 			
-                        <td> <input style="border:none" type="text" name="Series"    value='{{row["Series"]}}'/> </td>
+                        <td> <input  style="border:none" type="text" name="Series"    value='{{row["Series"]}}'/> </td>
                         <td> <input style="border:none" type="text" name="Down"    value='{{row["Down"]}}'/> </td>
                         <td> <input style="border:none" type="text" name="Distance" value='{{row["Dist"]}}' /> </td>
                         <td> <input style="border:none" type="text" name="Run/Pass" value='{{row["Run/Pass"]}}' required/> </td>
