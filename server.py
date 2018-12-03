@@ -13,20 +13,29 @@ SERIES_COLS = ['series']
 
 ########## QUERIES FOR REPORTS ##########
 
-# first down
+# ex. format totals query with "and Plays.down = 2 and Plays.dist >= 1 and Plays.dist <= 3"
+# ex format wins query with "and Plays.down = 2 and Plays.dist >= 1 and Plays.dist <= 3"
 RP_TOTALS_COLS = ['RP', 'PlayCount', 'PlayTotal', 'PlayPercent']
-RP_TOTALS_1_QUERY = "(SELECT Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, 100*count(Plays.rp)/max(tot.c) as PlayPercent FROM Plays, (select count(*) as c from Plays where genFormation != 'victory') tot, (select rp, count(*) as 'Wins'from Plays where winP like 'Y'group by rp) wins WHERE Plays.genFormation != 'victory' and Plays.down = 1 and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, 100*count(Plays.rp)/max(tot.c) as Percent FROM Plays, (select count(*) as c from Plays where genFormation != 'victory') tot WHERE Plays.genFormation != 'victory' and Plays.down = 1 and Plays.rp like 'N' GROUP BY Plays.rp) ;"
-
 RP_WINS_COLS = ['RP', 'WinCount', 'TotalRP', 'WinPercent']
-RP_WINS_1_QUERY = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', max(tot.c) as WinTotal, 100*count(Plays.rp)/max(tot.c) as WinPercent from Plays,(select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y' and Plays.down = 1) tot where Plays.genFormation != 'victory' and Plays.down = 1 and Plays.winP like 'Y'group by Plays.rp UNION ALL select '', '', '', '';"
 
-# second and short
+TOTALS_QUERY_DOWNS = "(SELECT  Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, 100*count(Plays.rp)/max(tot.c) as PlayPercent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory' {0}) tot,  (select rp, count(*) as 'Wins'from Plays where winP like 'Y'group by rp) wins WHERE  Plays.genFormation != 'victory' {0} and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT  Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, 100*count(Plays.rp)/max(tot.c) as Percent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory' {0}) tot WHERE  Plays.genFormation != 'victory' and {0} and Plays.rp like 'N' GROUP BY Plays.rp);"
 
-# second and Long
 
-# third and short
+TOTALS_QUERY = "(SELECT  Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, 100*count(Plays.rp)/max(tot.c) as PlayPercent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory') tot,  (select rp, count(*) as 'Wins'from Plays where winP like 'Y'group by rp) wins WHERE  Plays.genFormation != 'victory' and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT  Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, 100*count(Plays.rp)/max(tot.c) as Percent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory') tot WHERE  Plays.genFormation != 'victory' and Plays.rp like 'N' GROUP BY Plays.rp) ;"
 
-# third and long
+
+WINS_QUERY_DOWNS = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', totalRP.Count as 'TotalRP', 100*count(Plays.rp)/totalRP.Count as WinPercent from Plays, (select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y' {0}) tot, (select Plays.rp, count(Plays.rp) as Count from Plays where Plays.genFormation != 'victory' {0} and Plays.rp != 'N' group by Plays.rp) totalRP where Plays.genFormation != 'victory' {0} and Plays.winP like 'Y' and totalRP.rp = Plays.rp group by Plays.rp UNION ALL select '', '','', '';"
+
+WINS_QUERY = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', totalRP.Count as 'TotalRP', 100*count(Plays.rp)/totalRP.Count as WinPercent from Plays, (select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y') tot, (select Plays.rp, count(Plays.rp) as Count from Plays where Plays.genFormation != 'victory'and Plays.rp != 'N' group by Plays.rp) totalRP where Plays.genFormation != 'victory' and Plays.winP like 'Y' and totalRP.rp = Plays.rp group by Plays.rp UNION ALL select '-' as RP,'-' as WinCount,'-' as TotalRP,'-' as WinPercent;"
+
+# MOTION
+
+ALL_MOTION_COLS = ['Motion']
+ALL_MOTIONS_QUERY = "select motions.List as Motion from (select distinct motion_shift as 'List', count(*) as 'rcount' from Plays where motion_shift != 'NULL' group by motion_shift order by count(*) desc) motions;"
+
+# format motion_query with "oregon" to get table for specific motion name
+MOTION_TABLE_COLS = ['RUN', 'PASS', 'TOTAL']
+MOTION_QUERY = "select runs.r as RUN, pass.p as PASS, total.tot as TOTAL from  (select count(*) as tot from Plays where motion_shift = {0} and rp != 'n') total, (select count(*) as r from Plays where motion_shift = {0} and rp = 'r') runs, (select count(*) as p from Plays where motion_shift = {0} and rp = 'p') pass UNION ALL select TRUNCATE(runs.r/total.tot*100, 2) as RUN, TRUNCATE(pass.p/total.tot*100, 2) as PASS, '-' as TOTAL from  (select count(*) as tot from Plays where motion_shift = {0} and rp != 'n') total, (select count(*) as r from Plays where motion_shift = {0} and rp = 'r') runs, (select count(*) as p from Plays where motion_shift = {0} and rp = 'p') pass;"
 
 
 ############################################################
@@ -67,9 +76,7 @@ def main():
 def home():
     return render_template('index.html')
 
-@app.route("/events")
-def events():
-    return render_template('events.html')
+
 
 #TODO - eventually change to "drives"
 @app.route("/plays", methods=['GET', 'POST'])
@@ -102,13 +109,15 @@ def plays():
 	    print(seriesResults)
             return render_template('plays.html', data=seriesResults, content_type='application/json')
 
+
+############################################################
 @app.route("/reports", methods=['POST', 'GET'])
 def reports():
 
     print("entered reports")
 
     if request.method == "GET": # load queries
-        return render_template('events.html', result=[], content_type='application/json')
+        return render_template('reports.html', result=[], content_type='application/json')
 
     # get dropdown option
     form = request.form.get("form_type")
@@ -118,9 +127,42 @@ def reports():
 
             print("selected dropdown value: " + str(select))
             # run query based on dropdown value
-            if select == "totalRPN":
-                totalsResp = queryFormatted(RP_TOTALS_COLS, RP_TOTALS_1_QUERY)
-                winsResp = queryFormatted(RP_WINS_COLS, RP_WINS_1_QUERY)
+            if select == "totalRPN": # totalRPN
+                print("####### TOTAL RPN #######")
+
+                print("PRINTING TOTALS QUERY")
+
+                totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY)
+                winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY)
+                print("\ntotals resp\n")
+                print(totalsResp)
+                print("\nwins resp\n")
+                print(winsResp)
+                print("\n")
+
+                COLS = RP_TOTALS_COLS + RP_WINS_COLS
+                zipdata = zip(totalsResp, winsResp)
+                display = 'display'
+
+                return render_template('reports.html', data=zipdata, display=display, cols=COLS, content_type='application/json')
+
+
+
+            # TODO
+            elif select == 'sitRP': # FIRST DOWN
+                print("####### SECOND AND SHORT #######")
+
+                titles = ["First Down", "Second and Short"]
+
+                FIRST_TOTALS = TOTALS_QUERY.format("and Plays.down = 1")
+                FIRST_WINS = SECOND_SHORT_WINS_QUERY.format("and Plays.down = 1")
+                first_totals_resp = queryFormatted(RP_TOTALS_COLS, FIRST_TOTALS)
+                first_wins_resp = queryFormatted(RP_TOTALS_COLS, FIRST_WINS)
+
+                SECOND_SHORT_TOTALS = TOTALS_QUERY.format("and Plays.down = 2 and Plays.dist >= 1 and Plays.dist <= 3")
+                SECOND_SHORT_WINS = SECOND_SHORT_WINS_QUERY.format("and Plays.down = 2 and Plays.dist >= 1 and Plays.dist <= 3")
+                second_short_totalsResp = queryFormatted(RP_TOTALS_COLS, SECOND_SHORT_TOTALS)
+                second_short_winsResp = queryFormatted(RP_WINS_COLS, SECOND_SHORT_WINS)
 
                 print("\ntotals resp\n")
                 print(totalsResp)
@@ -130,10 +172,32 @@ def reports():
 
                 COLS = RP_TOTALS_COLS + RP_WINS_COLS
                 zipdata = zip(totalsResp, winsResp)
-                print(zipdata)
-                return render_template('events.html', data=zipdata, cols=COLS, content_type='application/json')
+
+                return render_template('reports.html', data=zipdata, cols=COLS, titles=titles, content_type='application/json')
+
+            elif select == 'motions':
+                print("####### MOTIONS #######")
+
+                motionResp = queryFormatted(ALL_MOTION_COLS, ALL_MOTIONS_QUERY)
+                m = []
+                queries = []
+                for i in motionResp:    # create list of all motion names
+                    name = i['Motion']
+                    name = "\'" + name + "\'"
+                    m.append(name)
+                    query = MOTION_QUERY.format(name) # run query with specific name
+                    resp = queryFormatted(MOTION_TABLE_COLS, query)
+
+                    queries.append(resp)
+                print(queries[3])
+
+                return render_template('reports.html', queries=queries, motionNames=m, cols=MOTION_TABLE_COLS, content_type='application/json')
+
+                # queries = list of queries for each motion name [query for oregon, ... , ]
+                # m = list of motion names
 
 
+############################################################
 @app.route("/players", methods=['POST', 'GET'])
 def players():
 
@@ -213,4 +277,4 @@ def players():
 
 if __name__ == "__main__":
     atexit.register(exitFunc, db=db)
-    app.run(host='0.0.0.0', port='5210', threaded=True)
+    app.run(host='0.0.0.0', port='5212', threaded=True)

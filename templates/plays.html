@@ -1,23 +1,23 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    
+
     <head>
-        
+
         <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
                 <meta name="description" content="">
                     <meta name="author" content="">
-                        
+
                         <title>index.html</title>
-                        
+
                         <!-- Bootstrap core CSS -->
                         <link href="{{url_for('static', filename='bootstrap.min.css')}}" rel="stylesheet">
                         <!-- jQuery CDN -->
                         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-                            
+
                             </head>
-    
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
         <div class="container">
@@ -36,7 +36,7 @@
                         <a class="nav-link" href="{{url_for('players')}}">Players</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('events')}}">Events</a>
+                        <a class="nav-link" href="{{url_for('reports')}}">Reports</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{url_for('plays')}}">Plays</a>
@@ -45,11 +45,15 @@
             </div>
         </div>
     </nav>
-    
+
     <div class="container">
         <body>
 
             <br><h4>Drive Charts</h4><br>
+
+            <table id="drives" align="center" style="width:80%" border = 1>
+
+
                 {% if result %}
 		<form name="generateDrives" action = "{{url_for('plays') }}" method = "POST" id="generateDrives">
 		    <input type="submit" value="Generate Drives">
@@ -77,9 +81,14 @@
                     <th>Explosive?</th>
                     <th></th>
                 </tr>
+<<<<<<< HEAD
                 
 	    {% for series in data %}
                 {% for row in series %}
+=======
+
+                {% for row in result %}
+>>>>>>> c5764f2f02ac836d0da7e4e25da0841930d5e6c4
                     <tr>
 			
                         <td> <input style="border:none" type="text" name="Series"    value='{{row["Series"]}}'/> </td>
@@ -91,6 +100,10 @@
                         <td> <input style="border:none" type="text" name="Result"   value='{{row["Result"]}}' /> </td>
                         <td> <input style="border:none" type="text" name="Explosive"   value='{{row["Explosive"]}}' /> </td>
                     </tr>
+<<<<<<< HEAD
+=======
+
+>>>>>>> c5764f2f02ac836d0da7e4e25da0841930d5e6c4
                 {% endfor %}
                     <tr>
 			
@@ -105,14 +118,19 @@
                     </tr>
 		{% endfor %}
                 {% endif %}
+<<<<<<< HEAD
             
+=======
+
+
+>>>>>>> c5764f2f02ac836d0da7e4e25da0841930d5e6c4
         </body>
     </div>
-    
+
     <!-- Bootstrap core JavaScript -->
     <script src="../static/bootstrap.bundle.min.js"></script>
-    
+
     <script type="text/javascript" src="static/drives.js"></script>
-    
-    
+
+
 </html>

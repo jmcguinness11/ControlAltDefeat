@@ -2,16 +2,16 @@
 
 <style>
    /* tr:nth-child(even) { background-color: #d8d8d8;}
-    
+
     tr:hover {background-color:#f5f5f5;}*/
-    
+
     input.tableinput { border-width:0px;border:none;}
-    
+
     .column {
         float: left;
         width: 50%;
     }
-    
+
 </style>
 
 <html lang="en">
@@ -19,9 +19,9 @@
         <link href="{{url_for('static', filename='bootstrap.min.css')}}" rel="stylesheet">
             <title>Players</title>
             </head>
-    
+
     <body>
-        
+
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
             <div class="container">
                 <a class="navbar-brand" href="#">ControlAltDefeat</a>
@@ -39,7 +39,7 @@
                             <a class="nav-link" href="{{url_for('players')}}">Players</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{url_for('events')}}">Events</a>
+                            <a class="nav-link" href="{{url_for('reports')}}">Reports</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{url_for('plays')}}">Plays</a>
@@ -48,14 +48,14 @@
                 </div>
             </div>
         </nav>
-        
+
         <div class="container">
             <br><h4>players.html</h4><br>
             <h5><u>Players</h5></u>
             <br>
-            
+
             <table id="players" align="center" style="width:80%" border = 1>
-                
+
                 {% if result %}
                 <tr>
                     <th>Player Name</th>
@@ -66,9 +66,9 @@
                     <th>Active?</th>
                     <th></th>
                 </tr>
-                
+
                 {% for row in result %}
-                
+
                 <!-- FORM TYPE: EDIT-->
 <!--                <form action = "{{ url_for('players') }}" method = "POST" id="edit">-->
 <!--                    <tr>-->
@@ -95,12 +95,12 @@
                     </tr>
                     <input type="hidden" name="form_type" value="EDIT">
                 </form>
-                
+
                 {% endfor %}
                 {% endif %}
-                
+
             </table><br>
-            
+
             <div class = "container">
             <div class="column">
             <!-- FORM TYPE: INSERT-->
@@ -110,28 +110,28 @@
                     <h5><u>Insert New Player</h5></u>
                     Player Name<br>
                     <input id="name" type = "text" name = "name" /></br>
-                    
+
                     Position<br>
                     <input id="position" type = "text" name = "position" /></br>
-                    
+
                     Player Tag<br>
                     <input id="playerTag" type = "text" name = "playerTag" required/><br>
-                    
+
                     Height<br>
                     <input id="height" type = "text" name = "height" /><br>
-                    
+
                     Weight<br>
                     <input id="weight" type = "text" name = "weight" /><br>
-                    
+
                     Active?<br>
                     <input id="active" type = "text" name = "active" /><br>
-                    
+
                     <input type ="submit" value = "Submit" /><br>
                     <input type="hidden" name="form_type" value="INSERT">
                         </form>
             </fieldset>
             </div>
-            
+
             <!-- FORM TYPE: DELETE (by playerTag)-->
             <div class="column">
             <br>
@@ -148,8 +148,8 @@
             </div>
             <script src="../static/jquery.min.js"></script>
             <script src="../static/bootstrap.bundle.min.js"></script>
-            
+
             </body>
-    
+
     </div>
 </html>

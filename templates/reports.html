@@ -87,34 +87,6 @@
 
             <br><br>
 
-            <!-- { % if motion % }
-
-            { % for m in motionNames %}
-                <h5>{{ m }}</h5>
-
-                <table align="center" border=1>
-                    <tr>
-                    {% for row in cols %}
-                        <th>{{row}}</th>
-                    {% endfor %}
-                    </tr>
-
-                    <tr>
-                    {% if queries %}
-                        {% for table in queries %}
-                            {% for row in table %}
-                                {% for i in row %}
-                                    <td>{{row[i]}}</td>
-                                {% endfor %}</tr>
-                            {% endfor %}
-                        {% endfor %}
-                    {% endif %}
-                </table> </br>
-
-                {% endfor %}
-            {% endif %} -->
-
-            { % if display % }
             <table id="reportTable" align="center" border=1>
                 {% if cols %}
                     <tr>
@@ -135,10 +107,8 @@
                     {% endif %}
                 {% endif %}
 
+
             </table>
-
-            { % endif % }
-
 
             <br><br><button>Download</button>
         </body>
