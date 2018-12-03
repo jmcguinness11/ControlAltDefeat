@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<style>
+tr:nth-child(even) { background-color: #d8d8d8;}
+
+tr:hover {background-color:#f5f5f5;}*/
+
+input.tableinput { border-width:0px;border:none;}
+
+.column {
+    float: left;
+    width: 50%;
+}
+</style>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Reports</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{url_for('static', filename='bootstrap.min.css')}}" rel="stylesheet">
+
+</head>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">ControlAltDefeat</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{url_for('home')}}">Home
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('players')}}">Players</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('reports')}}">Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('plays')}}">Plays</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <body>
+        <br><h4>Create Reports (reports.html)</h4<br>
+
+            <br><br>
+
+            <form  name="generateReport" action = "{{ url_for('reports') }}" method = "POST" id="generateReport">
+                <input type="submit" value="Generate Report">
+                <input type="hidden" name="form_type" value="GENERATE_REPORT">
+                <select id="selectReport" name="selectReport">
+                    <option value="totalRPN">Total RPN</option>
+                    <option value="sitRP">Situational Run/Pass</option>
+                    <option value="motions">Motions</option>
+                    <option value="backfields">Backfields</option>
+                    <option value="overallInv">Overall Inventory</option>
+                    <option value="sitRP">Situational Run/Pass</option>
+                    <option value="first">First Down</option>
+                    <option value="secondShort">Second Down & Short</option>
+                    <option value="secondLong">Second Down & Long</option>
+                    <option value="thirdShort">Third Down & Short</option>
+                    <option value="thirdLong">Third Down & Long</option>
+                    <option value="fourth">Fourth Down</option>
+                    <option value="fifth">Fifth Down</option>
+                    <option value="ten">10-11-12 Situations</option>
+                    <option value="twelve">12-13-14-15 Zones</option>
+                    <option value="black">Black Zone</option>
+                </select>
+            </form>
+
+            <br><br>
+
+	{% if data%}
+	{% for motion in data %}
+           	 <table id="reportTable" align="center" border=1>
+			<caption align="top">{{ motion }}</caption>
+			<tr>{% for col in cols %}
+			<th>{{col}}</th>
+			{% endfor %} </tr>
+			
+			<tr>{% for i in data[motion] %}
+				{% for j in i%}
+					{% for k in j %}
+						<td>{{ j[k] }}</td>
+					{% endfor %}
+				{% endfor %}</tr>
+			{% endfor %}
+	
+            	</table><br>
+	{% endfor %}
+	{% endif %}
+
+                <br><br><button>Download</button>
+            </body>
+        </div>
+
+        <!-- Bootstrap core JavaScript -->
+        <script src="../static/jquery.min.js"></script>
+        <script src="../static/bootstrap.bundle.min.js"></script>
+
+
+
+        </html>

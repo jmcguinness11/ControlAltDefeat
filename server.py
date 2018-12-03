@@ -160,8 +160,6 @@ def reports():
             elif select == 'sitRP': # FIRST DOWN
                 print("####### SECOND AND SHORT #######")
 
-                titles = ["First Down", "Second and Short (1-3)", "Second and Mid (4-6)", "Second and Long (7-10)", "Second and 11+", "Third and Short (1-2)", "Third and 3", "Third and Mid (4-6)", "Third and Long (7-10)", "Third and 11+"]
-
 		# first down
                 first_totals_resp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 1") )
                 first_wins_resp = queryFormatted(RP_TOTALS_COLS,WINS_QUERY_DOWNS.format("and Plays.down = 1") )
@@ -219,14 +217,29 @@ def reports():
 		third_long_zip = zip(third_long_totalsResp, third_long_winsResp)
 		third_11_zip = zip(third_11_totalsResp, third_11_winsResp)
 
+		# initialize dictionary to pass to html 
+		d = {}
+		### TODO TODO: get dictionary in correct order
+		d["First Down"] = first_zip
+		d["Second and Short (1-3)"] = second_short_zip
+		d["Second and Mid (4-6)"] = second_mid_zip
+		d["Second and Long (7-10)"] = second_long_zip
+		d["Second and 11+"] = second_11_zip
 
-                COLS = RP_TOTALS_COLS + RP_WINS_COLS
+		d["Third and Short (1-3)"] = third_short_zip
+		d["Third and 3"] = third_3_zip
+		d["Third and Mid (4-6)"] = third_mid_zip
+		d["Third and Long (7-10)"] = third_long_zip
+		d["Third and 11+"] = third_11_zip
+
+            	COLS = RP_TOTALS_COLS + RP_WINS_COLS
 
 		# concatenate all reports
-        	data = [({'title': titles[0]})] + first_zip + [({'title': titles[1]})]  +  second_short_zip +  [({'title': titles[2]})]  +  second_mid_zip +  [({'title': titles[3]})]  +  second_long_zip +  [({'title': titles[4]})]  +  second_11_zip + [({'title': titles[5]})]  +  third_short_zip + [({'title': titles[6]})]  +  third_3_zip + [({'title': titles[7]})]  +  third_mid_zip + [({'title': titles[8]})]  +  third_long_zip + [({'title': titles[9]})]  +  third_11_zip
+        	#data  =  first_zip + second_short_zip  +  second_mid_zip + second_long_zip +  +  second_11_zip +  +  third_short_zip  +  third_3_zip + third_mid_zip + third_long_zip +  third_11_zip
 
-
-                return render_template('reports.html', data=data, cols=COLS, titles=titles, content_type='application/json')
+            	print(d)
+		return render_template('sitRP.html', data=d, cols=COLS, content_type='application/json')
+            	#return render_template('reports.html', data=data, cols=COLS, titles=titles, content_type='application/json')
 
 
 
