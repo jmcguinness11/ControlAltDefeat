@@ -18,15 +18,15 @@ SERIES_COLS = ['series']
 RP_TOTALS_COLS = ['RP', 'PlayCount', 'PlayTotal', 'PlayPercent']
 RP_WINS_COLS = ['RP', 'WinCount', 'TotalRP', 'WinPercent']
 
-TOTALS_QUERY_DOWNS = "(SELECT  Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, 100*count(Plays.rp)/max(tot.c) as PlayPercent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory' {0}) tot,  (select rp, count(*) as 'Wins'from Plays where winP like 'Y' group by rp) wins WHERE  Plays.genFormation != 'victory' {0} and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT  Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, 100*count(Plays.rp)/max(tot.c) as Percent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory' {0}) tot WHERE  Plays.genFormation != 'victory' {0} and Plays.rp like 'N' GROUP BY Plays.rp);"
+TOTALS_QUERY_DOWNS = "(SELECT  Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, CONCAT(TRUNCATE(100*count(Plays.rp)/max(tot.c), 2), '%') as PlayPercent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory' {0}) tot,  (select rp, count(*) as 'Wins'from Plays where winP like 'Y' group by rp) wins WHERE  Plays.genFormation != 'victory' {0} and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT  Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, CONCAT(TRUNCATE(100*count(Plays.rp)/max(tot.c), 2), '%') as Percent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory' {0}) tot WHERE  Plays.genFormation != 'victory' {0} and Plays.rp like 'N' GROUP BY Plays.rp);"
 
 
-TOTALS_QUERY = "(SELECT  Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, 100*count(Plays.rp)/max(tot.c) as PlayPercent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory') tot,  (select rp, count(*) as 'Wins'from Plays where winP like 'Y'group by rp) wins WHERE  Plays.genFormation != 'victory' and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT  Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, 100*count(Plays.rp)/max(tot.c) as Percent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory') tot WHERE  Plays.genFormation != 'victory' and Plays.rp like 'N' GROUP BY Plays.rp) ;"
+TOTALS_QUERY = "(SELECT  Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, CONCAT(TRUNCATE(100*count(Plays.rp)/max(tot.c), 2), '%') as PlayPercent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory') tot,  (select rp, count(*) as 'Wins'from Plays where winP like 'Y'group by rp) wins WHERE  Plays.genFormation != 'victory' and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT  Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, CONCAT(TRUNCATE(100*count(Plays.rp)/max(tot.c), 2), '%') as Percent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory') tot WHERE  Plays.genFormation != 'victory' and Plays.rp like 'N' GROUP BY Plays.rp) ;"
 
 # for sitrp
-WINS_QUERY_DOWNS = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', totalRP.Count as 'TotalRP', 100*count(Plays.rp)/totalRP.Count as WinPercent from Plays, (select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y' {0}) tot, (select Plays.rp, count(Plays.rp) as Count from Plays where Plays.genFormation != 'victory' {0} and Plays.rp != 'N' group by Plays.rp) totalRP where Plays.genFormation != 'victory' {0} and Plays.winP like 'Y' and totalRP.rp = Plays.rp group by Plays.rp UNION ALL select '-' as RP, '-' as WinCount,'-' as TotalRP, '-' as WinPercent;"
+WINS_QUERY_DOWNS = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', totalRP.Count as 'TotalRP',  CONCAT(TRUNCATE(100*count(Plays.rp)/totalRP.Count, 2), '%') as WinPercent from Plays, (select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y' {0}) tot, (select Plays.rp, count(Plays.rp) as Count from Plays where Plays.genFormation != 'victory' {0} and Plays.rp != 'N' group by Plays.rp) totalRP where Plays.genFormation != 'victory' {0} and Plays.winP like 'Y' and totalRP.rp = Plays.rp group by Plays.rp UNION ALL select '-' as RP, '-' as WinCount,'-' as TotalRP, '-' as WinPercent;"
 
-WINS_QUERY = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', totalRP.Count as 'TotalRP', 100*count(Plays.rp)/totalRP.Count as WinPercent from Plays, (select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y') tot, (select Plays.rp, count(Plays.rp) as Count from Plays where Plays.genFormation != 'victory'and Plays.rp != 'N' group by Plays.rp) totalRP where Plays.genFormation != 'victory' and Plays.winP like 'Y' and totalRP.rp = Plays.rp group by Plays.rp UNION ALL select '-' as RP,'-' as WinCount,'-' as TotalRP,'-' as WinPercent;"
+WINS_QUERY = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', totalRP.Count as 'TotalRP', CONCAT(TRUNCATE(100*count(Plays.rp)/totalRP.Count, 2), '%') as WinPercent from Plays, (select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y') tot, (select Plays.rp, count(Plays.rp) as Count from Plays where Plays.genFormation != 'victory'and Plays.rp != 'N' group by Plays.rp) totalRP where Plays.genFormation != 'victory' and Plays.winP like 'Y' and totalRP.rp = Plays.rp group by Plays.rp UNION ALL select '-' as RP,'-' as WinCount,'-' as TotalRP,'-' as WinPercent;"
 
 # MOTION
 
@@ -35,7 +35,16 @@ ALL_MOTIONS_QUERY = "select motions.List as Motion from (select distinct motion_
 
 # format motion_query with "oregon" to get table for specific motion name
 MOTION_TABLE_COLS = ['RUN', 'PASS', 'TOTAL']
-MOTION_QUERY = "select runs.r as RUN, pass.p as PASS, total.tot as TOTAL from  (select count(*) as tot from Plays where motion_shift = {0} and rp != 'n') total, (select count(*) as r from Plays where motion_shift = {0} and rp = 'r') runs, (select count(*) as p from Plays where motion_shift = {0} and rp = 'p') pass UNION ALL select TRUNCATE(runs.r/total.tot*100, 2) as RUN, TRUNCATE(pass.p/total.tot*100, 2) as PASS, '-' as TOTAL from  (select count(*) as tot from Plays where motion_shift = {0} and rp != 'n') total, (select count(*) as r from Plays where motion_shift = {0} and rp = 'r') runs, (select count(*) as p from Plays where motion_shift = {0} and rp = 'p') pass;"
+MOTION_QUERY = "select runs.r as RUN, pass.p as PASS, total.tot as TOTAL from  (select count(*) as tot from Plays where motion_shift = {0} and rp != 'n') total, (select count(*) as r from Plays where motion_shift = {0} and rp = 'r') runs, (select count(*) as p from Plays where motion_shift = {0} and rp = 'p') pass UNION ALL select CONCAT(TRUNCATE(runs.r/total.tot*100, 2), '%') as RUN, CONCAT(TRUNCATE(runs.r/total.tot*100, 2), '%') as PASS, '-' as TOTAL from  (select count(*) as tot from Plays where motion_shift = {0} and rp != 'n') total, (select count(*) as r from Plays where motion_shift = {0} and rp = 'r') runs, (select count(*) as p from Plays where motion_shift = {0} and rp = 'p') pass;"
+
+# BACKFIELDS
+
+ALL_BACKFIELD_COLS = ['Backfield']
+ALL_BACKFIELD_QUERY = "select distinct backfield as Backfield from Plays where  backfield != 'NULL' group by backfield order by count(*) desc;"
+
+# format motion_query with "oregon" to get table for specific motion name
+BACKFIELD_TABLE_COLS = ['RUN', 'PASS', 'TOTAL']
+BACKFIELD_QUERY = "select runs.r as RUN, pass.p as PASS, total.tot as TOTAL from  (select count(*) as tot from Plays where backfield = {0} and rp != 'n') total, (select count(*) as r from Plays where backfield = {0} and rp = 'r') runs, (select count(*) as p from Plays where backfield = {0} and rp = 'p') pass UNION ALL  select CONCAT(TRUNCATE(runs.r/total.tot*100, 2), '%') as RUN, CONCAT(TRUNCATE(pass.p/total.tot*100, 2), '%') as PASS, '-' as TOTAL from  (select count(*) as tot from Plays where backfield = {0} and rp != 'n') total, (select count(*) as r from Plays where backfield = {0} and rp = 'r') runs, (select count(*) as p from Plays where backfield = {0} and rp = 'p') pass;"
 
 
 ############################################################
@@ -193,6 +202,8 @@ def reports():
                 third_11_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 7 and Plays.dist >= 11"))
                 third_11_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 11"))
 
+		# TODO: TODO: TODO: add 4th down queries and 5th, high red, red, white, blue, black
+
 
         	# zip data
         	first_zip = zip(first_totals_resp, first_wins_resp)
@@ -210,12 +221,36 @@ def reports():
 
 
                 COLS = RP_TOTALS_COLS + RP_WINS_COLS
-        	
+
 		# concatenate all reports
-        	data = [({'title': titles[0]})] + first_zip + [({'title': titles[1]})]  +  second_short_zip +  [({'title': titles[2]})]  +  second_mid_zip +  [({'title': titles[3]})]  +  second_long_zip +  [({'title': titles[4]})]  +  second_11_zip + [({'title': titles[5]})]  +  third_short_zip + [({'title': titles[6]})]  +  third_3_zip + [({'title': titles[7]})]  +  third_mid_zip + [({'title': titles[8]})]  +  third_long_zip + [({'title': titles[9]})]  +  third_11_zip 
- 
+        	data = [({'title': titles[0]})] + first_zip + [({'title': titles[1]})]  +  second_short_zip +  [({'title': titles[2]})]  +  second_mid_zip +  [({'title': titles[3]})]  +  second_long_zip +  [({'title': titles[4]})]  +  second_11_zip + [({'title': titles[5]})]  +  third_short_zip + [({'title': titles[6]})]  +  third_3_zip + [({'title': titles[7]})]  +  third_mid_zip + [({'title': titles[8]})]  +  third_long_zip + [({'title': titles[9]})]  +  third_11_zip
+
 
                 return render_template('reports.html', data=data, cols=COLS, titles=titles, content_type='application/json')
+
+
+
+	    elif select == 'backfields':
+		print("###BACKFIELDS#####")
+		backResp = queryFormatted(ALL_BACKFIELD_COLS, ALL_BACKFIELD_QUERY)
+
+		print(backResp)
+		b = []
+		queries = []
+		d = {}
+
+		for i in backResp:
+			name = i['Backfield']
+			newName = "\'" + name + "\'"
+			b.append(name)
+			query = BACKFIELD_QUERY.format(newName)
+			resp = queryFormatted(BACKFIELD_TABLE_COLS, query)
+			d[name] = resp
+			queries.append(resp)
+		data = zip(b, queries)
+		return render_template('motions.html', d=d, m=b, data=data, cols=MOTION_TABLE_COLS, content_type='application/json')
+
+
 
             elif select == 'motions':
                 print("####### MOTIONS #######")
@@ -223,20 +258,29 @@ def reports():
                 motionResp = queryFormatted(ALL_MOTION_COLS, ALL_MOTIONS_QUERY)
                 m = []
                 queries = []
+
+		d = {}
+
                 for i in motionResp:    # create list of all motion names
                     name = i['Motion']
-                    name = "\'" + name + "\'"
+                    newName = "\'" + name + "\'"
                     m.append(name)
-                    query = MOTION_QUERY.format(name) # run query with specific name
+                    query = MOTION_QUERY.format(newName) # run query with specific name
                     resp = queryFormatted(MOTION_TABLE_COLS, query)
-
+		    d[name] = resp
                     queries.append(resp)
-                print(queries[3])
 
-                return render_template('reports.html', queries=queries, motionNames=m, cols=MOTION_TABLE_COLS, content_type='application/json')
+		data = zip(m, queries)
+
+                print(data)
+
+                return render_template('motions.html', d=d,m=m, data=data, cols=MOTION_TABLE_COLS, content_type='application/json')
 
                 # queries = list of queries for each motion name [query for oregon, ... , ]
                 # m = list of motion names
+
+
+
 
 
 ############################################################
