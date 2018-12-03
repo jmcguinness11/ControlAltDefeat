@@ -48,12 +48,26 @@
     
     <div class="container">
         <body>
-            
-            <table id="drives" align="center" style="width:80%" border = 1>
-            <br><h4>plays.html</h4><br>
-                
+
+            <br><h4>Drive Charts</h4><br>
                 {% if result %}
+		<form name="generateDrives" action = "{{url_for('plays') }}" method = "POST" id="generateDrives">
+		    <input type="submit" value="Generate Drives">
+		    <input type="hidden" name="form_type" value="GENERATE_DRIVES">
+	    	    <select id="selectGame" name="selectGame">
+			{% for row in result %}
+			    <option value="{{row}}">{{row}}</option>
+			{% endfor %}
+		    </select>
+		</form>
+		{% endif %}
+
+            {% if data %}
+
+            <table id="drives" align="center" style="width:80%" border = 1>
+
                 <tr>
+                    <th>Series</th>
                     <th>Down</th>
                     <th>Dist</th>
                     <th>Run/Pass</th>
@@ -64,8 +78,11 @@
                     <th></th>
                 </tr>
                 
-                {% for row in result %}
+	    {% for series in data %}
+                {% for row in series %}
                     <tr>
+			
+                        <td> <input style="border:none" type="text" name="Series"    value='{{row["Series"]}}'/> </td>
                         <td> <input style="border:none" type="text" name="Down"    value='{{row["Down"]}}'/> </td>
                         <td> <input style="border:none" type="text" name="Distance" value='{{row["Dist"]}}' /> </td>
                         <td> <input style="border:none" type="text" name="Run/Pass" value='{{row["Run/Pass"]}}' required/> </td>
@@ -74,10 +91,20 @@
                         <td> <input style="border:none" type="text" name="Result"   value='{{row["Result"]}}' /> </td>
                         <td> <input style="border:none" type="text" name="Explosive"   value='{{row["Explosive"]}}' /> </td>
                     </tr>
-                
                 {% endfor %}
+                    <tr>
+			
+                        <td> <input style="border:none" type="text" name="Series"    value=''/> </td>
+                        <td> <input style="border:none" type="text" name="Down"    value=''/> </td>
+                        <td> <input style="border:none" type="text" name="Distance" value='' /> </td>
+                        <td> <input style="border:none" type="text" name="Run/Pass" value='' required/> </td>
+                        <td> <input style="border:none" type="text" name="FieldPos"   value='' /> </td>
+                        <td> <input style="border:none" type="text" name="Gain"   value='' /> </td>
+                        <td> <input style="border:none" type="text" name="Result"   value='' /> </td>
+                        <td> <input style="border:none" type="text" name="Explosive"   value='' /> </td>
+                    </tr>
+		{% endfor %}
                 {% endif %}
-            
             
         </body>
     </div>

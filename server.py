@@ -8,6 +8,8 @@ import itertools
 PLAYER_COLS = ['name', 'position', 'playerTag', 'height', 'weight', 'active']
 PLAYERS_GET_QUERY = "SELECT * FROM Players WHERE active=1;"
 DRIVE_COLS = ['Down', 'Dist', 'Run/Pass', 'FieldPos', 'Gain', 'Result', 'Explosive']
+EVENTS_COLS = ['id', 'game']
+SERIES_COLS = ['series']
 
 ########## QUERIES FOR REPORTS ##########
 
@@ -70,17 +72,35 @@ def events():
     return render_template('events.html')
 
 #TODO - eventually change to "drives"
-@app.route("/plays")
+@app.route("/plays", methods=['GET', 'POST'])
 def plays():
     # Search query
-    query = '''SELECT down, dist, rp, fieldPos, gain, result, explosive
-            FROM Plays, Events
-            WHERE Plays.event_id = Events.id
-                and Events.game='Stanford' and Events.series=1'''
-    r = queryFormatted(DRIVE_COLS, query)
-    display = [record for record in r]
+    if request.method == "GET": # load queries
+        eventquery = '''SELECT id, game FROM Events'''
+        allGames = queryFormatted(EVENTS_COLS, eventquery)
+        gameList = []
+        for a in allGames:
+            if a['game'] not in gameList:
+                gameList.append(a['game'])
+	print(gameList)
+        return render_template('plays.html', result=gameList, content_type='application/json')
 
-    return render_template('plays.html', result=display, content_type='application/json')
+    form = request.form.get("form_type")
+    if request.method == "POST":
+        if form == 'GENERATE_DRIVES':
+            select = request.form.get("selectGame")
+            seriesQuery = "SELECT DISTINCT series from Events where game=\'" + str(select) + "\' ORDER BY series ASC"
+            totalSeriesNums = queryFormatted(SERIES_COLS, seriesQuery)
+
+	    seriesResults = []
+            for t in totalSeriesNums:
+                playquery = "SELECT down, dist, rp, fieldPos, gain, result, explosive FROM Plays, Events WHERE Plays.event_id = Events.id and Events.game=\'" + str(select) + "\' and Events.series=" + t['series']
+                re = queryFormatted(DRIVE_COLS, playquery)
+		for r in re:
+		    r['Series'] = t['series']
+                seriesResults.append(re)
+	    print(seriesResults)
+            return render_template('plays.html', data=seriesResults, content_type='application/json')
 
 @app.route("/reports", methods=['POST', 'GET'])
 def reports():

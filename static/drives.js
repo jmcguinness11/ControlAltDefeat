@@ -8,13 +8,12 @@ $(window).bind('load', function() {
         var $tds = $(this).find('td') 
         var gain = $tds.get(4)
         if(gain) {
-            console.log(gain)
             input = $(gain).find('input').get(0)
             value = parseInt($(input).attr('value'))
+	    console.log(value)
             if(value > 0) {
                 value = Math.min(value,10)
                 scaled_val = Math.floor(255*(10-value)/10)
-                console.log(scaled_val)
                 color = "rgb(" + scaled_val + ",255," + scaled_val + ")"
                 all_inputs = $($tds).find('input').each(function() {
                     in_list = $(this).get(0)
@@ -30,7 +29,15 @@ $(window).bind('load', function() {
                     $(in_list).css("background-color", color)
                 })
                 $($tds).css("background-color", color)
-            }
+            } else {
+		console.log("here")
+		color = "rgb(205, 201, 201)"
+                all_inputs = $($tds).find('input').each(function() {
+                    in_list = $(this).get(0)
+                    $(in_list).css("background-color", color)
+                })
+                $($tds).css("background-color", color)
+	    }
         }
         //console.log($tds.html())
     })
