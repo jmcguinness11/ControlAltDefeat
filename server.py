@@ -6,6 +6,7 @@ import atexit
 #global variables for column names
 PLAYER_COLS = ['name', 'position', 'playerTag', 'height', 'weight', 'active']
 PLAYERS_GET_QUERY = "SELECT * FROM Players WHERE active=1;"
+DRIVE_COLS = ['Down', 'Dist', 'Run/Pass', 'FieldPos', 'Gain', 'Result', 'Explosive']
 
 #register exit function
 def exitFunc(db):
@@ -16,7 +17,6 @@ def exitFunc(db):
 #set up mysql connection
 db = MySQLdb.connect(host="localhost", user="kkraus1", passwd="goirish1", db="kkraus1")
 cur = db.cursor()
-
 
 #function for returning query as dictionary
 def queryFormatted(colNames, query):
@@ -46,9 +46,18 @@ def home():
 def events():
     return render_template('events.html')
 
+#TODO - eventually change to "drives"
 @app.route("/plays")
 def plays():
-    return render_template('plays.html')
+    # Search query
+    query = '''SELECT down, dist, rp, fieldPos, gain, result, explosive
+            FROM Plays, Events
+            WHERE Plays.event_id = Events.id
+                and Events.game='Stanford' and Events.series=1'''
+    r = queryFormatted(DRIVE_COLS, query)
+    display = [record for record in r]
+
+    return render_template('plays.html', result=display, content_type='application/json')
 
 
 @app.route("/players", methods=['POST', 'GET'])

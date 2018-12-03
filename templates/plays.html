@@ -13,6 +13,8 @@
                         
                         <!-- Bootstrap core CSS -->
                         <link href="{{url_for('static', filename='bootstrap.min.css')}}" rel="stylesheet">
+                        <!-- jQuery CDN -->
+                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
                             
                             </head>
     
@@ -47,18 +49,43 @@
     <div class="container">
         <body>
             
+            <table id="drives" align="center" style="width:80%" border = 1>
             <br><h4>plays.html</h4><br>
+                
+                {% if result %}
+                <tr>
+                    <th>Down</th>
+                    <th>Dist</th>
+                    <th>Run/Pass</th>
+                    <th>FieldPos</th>
+                    <th>Gain</th>
+                    <th>Result</th>
+                    <th>Explosive?</th>
+                    <th></th>
+                </tr>
+                
+                {% for row in result %}
+                    <tr>
+                        <td> <input style="border:none" type="text" name="Down"    value='{{row["Down"]}}'/> </td>
+                        <td> <input style="border:none" type="text" name="Distance" value='{{row["Dist"]}}' /> </td>
+                        <td> <input style="border:none" type="text" name="Run/Pass" value='{{row["Run/Pass"]}}' required/> </td>
+                        <td> <input style="border:none" type="text" name="FieldPos"   value='{{row["FieldPos"]}}' /> </td>
+                        <td> <input style="border:none" type="text" name="Gain"   value='{{row["Gain"]}}' /> </td>
+                        <td> <input style="border:none" type="text" name="Result"   value='{{row["Result"]}}' /> </td>
+                        <td> <input style="border:none" type="text" name="Explosive"   value='{{row["Explosive"]}}' /> </td>
+                    </tr>
+                
+                {% endfor %}
+                {% endif %}
             
             
         </body>
     </div>
     
     <!-- Bootstrap core JavaScript -->
-    <script src="../static/jquery.min.js"></script>
     <script src="../static/bootstrap.bundle.min.js"></script>
     
+    <script type="text/javascript" src="static/drives.js"></script>
     
     
 </html>
-
-
