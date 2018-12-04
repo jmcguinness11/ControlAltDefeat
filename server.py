@@ -3,6 +3,7 @@ import json
 import MySQLdb
 import atexit
 import itertools
+import collections
 
 #global variables for column names
 PLAYER_COLS = ['name', 'position', 'playerTag', 'height', 'weight', 'active']
@@ -46,6 +47,18 @@ ALL_BACKFIELD_QUERY = "select distinct backfield as Backfield from Plays where  
 BACKFIELD_TABLE_COLS = ['RUN', 'PASS', 'TOTAL']
 BACKFIELD_QUERY = "select runs.r as RUN, pass.p as PASS, total.tot as TOTAL from  (select count(*) as tot from Plays where backfield = {0} and rp != 'n') total, (select count(*) as r from Plays where backfield = {0} and rp = 'r') runs, (select count(*) as p from Plays where backfield = {0} and rp = 'p') pass UNION ALL  select CONCAT(TRUNCATE(runs.r/total.tot*100, 2), '%') as RUN, CONCAT(TRUNCATE(pass.p/total.tot*100, 2), '%') as PASS, '-' as TOTAL from  (select count(*) as tot from Plays where backfield = {0} and rp != 'n') total, (select count(*) as r from Plays where backfield = {0} and rp = 'r') runs, (select count(*) as p from Plays where backfield = {0} and rp = 'p') pass;"
 
+
+# get downs for 'where down = x and dist <= ...' 
+
+#DOWNS_QUERY = "select distinct Plays.genFormation as 'List', count(Plays.down) as 'Count', CONCAT(TRUNCATE((count(Plays.down)/tot.t)*100, 2), '%') as Percent from Plays, (select 'Total', count(*) as 't' from Plays where {0}) tot where {0}  group by Plays.genFormation " # fill in 'where down = {1 and dist = 5}
+
+DOWNS_QUERY = "select distinct Plays.genFormation as 'List', count(Plays.down) as 'Count', CONCAT(TRUNCATE((count(Plays.down)/tot.t)*100, 2), '%') as Percent from Plays, (select 'Total', count(*) as 't' from Plays where Plays.genFormation != 'victory' and {0}) tot where Plays.genFormation != 'victory' and {0} group by Plays.genFormation order by count(*) desc;"
+
+TOTALS_QUERY = "select count(*) as 't' from Plays where {0};"
+
+# query to get running and passing plays for each GENFORMATION
+	# fill in with: {genFormation}, {R or P}, {down and distance}
+GEN_FORMATION = "select distinct Plays.genPlay as 'List', count(*) as 'Count', totals.Total as Num from Plays, (select count(*) as Total from Plays where Plays.genFormation = {0}  and Plays.rp = {1} and {2}) totals where Plays.genFormation = {0} and Plays.rp = {1} and {2} group by Plays.genPlay order by count(*) desc;"
 
 ############################################################
 
@@ -157,8 +170,8 @@ def reports():
 
 
             # TODO
-            elif select == 'sitRP': # FIRST DOWN
-                print("####### SECOND AND SHORT #######")
+            elif select == 'sitRP': 
+                print("####### SITUATIONAL RP #######")
 
 		# first down
                 first_totals_resp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 1") )
@@ -185,22 +198,38 @@ def reports():
                 third_short_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 3 and Plays.dist >= 1 and Plays.dist <= 2"))
 
 		# third and 3
-                third_3_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist = 3"))
-                third_3_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist = 3"))
+                third_3_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 3 and Plays.dist = 3"))
+                third_3_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 3 and Plays.dist = 3"))
 
 		# third and 4-6
-                third_mid_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 4 and Plays.dist <= 6"))
-                third_mid_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 4 and Plays.dist <= 6"))
+                third_mid_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 3 and Plays.dist >= 4 and Plays.dist <= 6"))
+                third_mid_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 3 and Plays.dist >= 4 and Plays.dist <= 6"))
 
 		# third and 7-10
-                third_long_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 7 and Plays.dist >= 7 and Plays.dist <=10"))
-                third_long_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 7 and Plays.dist <=10"))
+                third_long_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 3 and Plays.dist >= 7 and Plays.dist <=10"))
+                third_long_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 3 and Plays.dist >= 7 and Plays.dist <=10"))
 
 		# third and 11+
-                third_11_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 7 and Plays.dist >= 11"))
-                third_11_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 11"))
+                third_11_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 3 and Plays.dist >= 11"))
+                third_11_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 3 and Plays.dist >= 11"))
 
-		# TODO: TODO: TODO: add 4th down queries and 5th, high red, red, white, blue, black
+		# fourth and short 1-3
+                fourth_short_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 4 and Plays.dist >= 1 and Plays.dist <= 3"))
+                fourth_short_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 4 and Plays.dist >= 1 and Plays.dist <= 3"))
+
+		# fourth and 4-6
+                fourth_mid_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 4 and Plays.dist >= 4 and Plays.dist <= 6"))
+                fourth_mid_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 4 and Plays.dist >= 4 and Plays.dist <= 6"))
+
+		# fourth and 7-10
+                fourth_long_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 4 and Plays.dist >= 7 and Plays.dist <= 10"))
+                fourth_long_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 4 and Plays.dist >= 7 and Plays.dist <= 10"))
+
+		# fourth and 11+
+                fourth_11_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 4 and Plays.dist >= 11"))
+                fourth_11_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 4 and Plays.dist >= 11"))
+
+		# TODO: TODO: TODO: add 5th, high red, red, white, blue, black
 
 
         	# zip data
@@ -217,27 +246,33 @@ def reports():
 		third_long_zip = zip(third_long_totalsResp, third_long_winsResp)
 		third_11_zip = zip(third_11_totalsResp, third_11_winsResp)
 
-		# initialize dictionary to pass to html 
-		d = {}
-		### TODO TODO: get dictionary in correct order
-		d["First Down"] = first_zip
-		d["Second and Short (1-3)"] = second_short_zip
-		d["Second and Mid (4-6)"] = second_mid_zip
-		d["Second and Long (7-10)"] = second_long_zip
-		d["Second and 11+"] = second_11_zip
+        	fourth_short_zip = zip(fourth_short_totalsResp, fourth_short_winsResp)
+        	fourth_mid_zip = zip(fourth_mid_totalsResp, fourth_mid_winsResp)
+        	fourth_long_zip = zip(fourth_long_totalsResp, fourth_long_winsResp)
+        	fourth_11_zip = zip(fourth_11_totalsResp, fourth_11_winsResp)
 
-		d["Third and Short (1-3)"] = third_short_zip
-		d["Third and 3"] = third_3_zip
-		d["Third and Mid (4-6)"] = third_mid_zip
-		d["Third and Long (7-10)"] = third_long_zip
-		d["Third and 11+"] = third_11_zip
+		# initialize dictionary to pass to html
+		d = collections.OrderedDict()
+		d["1st Down"] = first_zip
+
+		d["2nd and Short (1-3)"] = second_short_zip
+		d["2nd and Mid (4-6)"] = second_mid_zip
+		d["2nd and Long (7-10)"] = second_long_zip
+		d["2nd and 11+"] = second_11_zip
+
+		d["3rd and Short (1-3)"] = third_short_zip
+		d["3rd and 3"] = third_3_zip
+		d["3rd and Mid (4-6)"] = third_mid_zip
+		d["3rd and Long (7-10)"] = third_long_zip
+		d["3rd and 11+"] = third_11_zip
+
+		d["4th and Short (1-3)"] = fourth_short_zip
+		d["4th and Mid (4-6)"] = fourth_mid_zip
+		d["4th and Long (7-10)"] = fourth_long_zip
+		d["4th and 11+"] = fourth_11_zip
 
             	COLS = RP_TOTALS_COLS + RP_WINS_COLS
 
-		# concatenate all reports
-        	#data  =  first_zip + second_short_zip  +  second_mid_zip + second_long_zip +  +  second_11_zip +  +  third_short_zip  +  third_3_zip + third_mid_zip + third_long_zip +  third_11_zip
-
-            	print(d)
 		return render_template('sitRP.html', data=d, cols=COLS, content_type='application/json')
             	#return render_template('reports.html', data=data, cols=COLS, titles=titles, content_type='application/json')
 
@@ -262,7 +297,6 @@ def reports():
 			queries.append(resp)
 		data = zip(b, queries)
 		return render_template('motions.html', d=d, m=b, data=data, cols=MOTION_TABLE_COLS, content_type='application/json')
-
 
 
             elif select == 'motions':
@@ -292,9 +326,37 @@ def reports():
                 # queries = list of queries for each motion name [query for oregon, ... , ]
                 # m = list of motion names
 
+		
+	    elif select == 'first': 
+		print("####### FIRST  #######")
+		FIRST_QUERY = DOWNS_QUERY.format("Plays.down = 1")
+		firstResp = queryFormatted(['List', 'Count', 'Percent'], FIRST_QUERY)
+		
+		TOTALS_Q = TOTALS_QUERY.format('Plays.down =1')
+		tResp = queryFormatted(['t'], TOTALS_Q) 
+		total = tResp[0]['t']
+	
+		names = [] # list of all formations
+		for formation in firstResp: 
+			name = formation['List']
+			#name = name.replace("\'", '')
+			names.append(name)
 
+		# loop through names and get run and pass tables for each formation in 1st down
+		data = {}
+		for name in names: 
+		# format with play name, r/p, down and distance
+			nameNew = "\'" + name + "\'"
+			runs = GEN_FORMATION.format(nameNew, '\'r\'', "Plays.down = 1")
+			passes = GEN_FORMATION.format(nameNew, '\'p\'', "Plays.down = 1")
+			
+			run_q = queryFormatted(['List', 'Count', 'Num'], runs)
+			pass_q = queryFormatted(['List', 'Count', 'Num'], passes)
 
-
+			data[name] = run_q + pass_q
+		
+		print(data)
+		return render_template('inventories.html', data=firstResp, total=total, content_type='application/json')
 
 ############################################################
 @app.route("/players", methods=['POST', 'GET'])

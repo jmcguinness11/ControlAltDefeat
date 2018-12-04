@@ -71,7 +71,7 @@ input.tableinput { border-width:0px;border:none;}
                     <option value="motions">Motions</option>
                     <option value="backfields">Backfields</option>
                     <option value="overallInv">Overall Inventory</option>
-                    <option value="sitRP">Situational Run/Pass</option>
+                    
                     <option value="first">First Down</option>
                     <option value="secondShort">Second Down & Short</option>
                     <option value="secondLong">Second Down & Long</option>
@@ -94,13 +94,13 @@ input.tableinput { border-width:0px;border:none;}
 			<tr>{% for col in cols %}
 			<th>{{col}}</th>
 			{% endfor %} </tr>
-			
+
 			<tr>{% for i in motion[1] %}
 				{% for j in i%}
 					<td>{{ i[j] }}</td>
 				{% endfor %}</tr>
 			{% endfor %}
-	
+
             	</table><br>
 	{% endfor %}
 	{% endif %}
