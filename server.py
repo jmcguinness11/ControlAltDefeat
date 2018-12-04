@@ -1,4 +1,5 @@
 from flask import *
+import sys
 import json
 import MySQLdb
 import atexit
@@ -376,4 +377,8 @@ def players():
 
 if __name__ == "__main__":
     atexit.register(exitFunc, db=db)
-    app.run(host='0.0.0.0', port='5210', threaded=True)
+    if len(sys.argv) != 2:
+        print("Usage: python server.py PORT")
+        exit(1)
+    PORT = sys.argv[1]
+    app.run(host='0.0.0.0', port=PORT, threaded=True)
