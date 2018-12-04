@@ -88,6 +88,40 @@ def queryFormatted(colNames, query):
         res_list.append(row_dict)
     return res_list
 
+# function to create inventory for each down and distance, by just changing conditionals in query
+def inventories(regex):
+	FIRST_QUERY = DOWNS_QUERY.format(regex)
+	firstResp = queryFormatted(['List', 'Count', 'Percent'], FIRST_QUERY)
+		
+	TOTALS_Q = TOTALS_QUERY.format(regex)
+	tResp = queryFormatted(['t'], TOTALS_Q) 
+	total = tResp[0]['t']
+	
+	names = [] # list of all formations
+	for formation in firstResp: 
+		name = formation['List']
+		names.append(name)
+
+	# loop through names and get run and pass tables for each formation in 1st down
+	data = {}
+	RUNS = {}
+	PASSES = {}
+	for name in names: 
+	# format with play name, r/p, down and distance
+		nameNew = "\'" + name + "\'"
+		runs = GEN_FORMATION.format(nameNew, '\'r\'', regex)
+		passes = GEN_FORMATION.format(nameNew, '\'p\'', regex)
+			
+		run_q = queryFormatted(['List', 'Count', 'Num'], runs)
+		pass_q = queryFormatted(['List', 'Count', 'Num'], passes)
+
+		RUNS[name] = run_q
+		PASSES[name] = pass_q
+
+		data[name] = [{'List': 'Run', 'Count': '', 'Num': ''}] + run_q + [{'List': 'Pass', 'Count': '', 'Num': ''}] + pass_q
+
+	return [firstResp, RUNS, PASSES, total]
+
 
 app = Flask(__name__)
 
@@ -158,11 +192,6 @@ def reports():
 
                 totalsResp = queryFormatted(RP_TOTALS_COLS, ALL_TOTALS_QUERY)
                 winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY)
-                #print("\ntotals resp\n")
-                #print(totalsResp) 
-                #print("\nwins resp\n")
-                #print(winsResp)
-                #print("\n")
 
                 COLS = RP_TOTALS_COLS + RP_WINS_COLS
                 zipdata = zip(totalsResp, winsResp)
@@ -171,8 +200,6 @@ def reports():
                 return render_template('reports.html', data=zipdata, cols=COLS, content_type='application/json')
 
 
-
-            # TODO
             elif select == 'sitRP': 
                 print("####### SITUATIONAL RP #######")
 
@@ -232,53 +259,80 @@ def reports():
                 fourth_11_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 4 and Plays.dist >= 11"))
                 fourth_11_winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 4 and Plays.dist >= 11"))
 
-		# TODO: TODO: TODO: add 5th, high red, red, white, blue, black
+		# first down
+                fifth_totals_resp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 5") )
+                fifth_wins_resp = queryFormatted(RP_WINS_COLS,WINS_QUERY_DOWNS.format("and Plays.down = 5") )
+
+		# high red
+		hred_tot_resp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and fieldPos <= 30 and fieldPos >= 21"))
+		hred_wins_resp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and fieldPos <= 30 and fieldPos >= 21"))
+
+		# red
+		red_tot_resp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and fieldPos <= 20 and fieldPos >= 11"))
+		red_wins_resp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and fieldPos <= 20 and fieldPos >= 11"))
+
+		# red
+		white_tot_resp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and fieldPos <= 10 and fieldPos >= 6"))
+		white_wins_resp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and fieldPos <= 10 and fieldPos >= 6"))
+
+		# blue
+		blue_tot_resp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and fieldPos <= 10 and fieldPos >= 6"))
+		blue_wins_resp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and fieldPos <= 10 and fieldPos >= 6"))
+
+		# black
+		black_tot_resp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and fieldPos >= -10 and fieldPos <= -1"))
+		black_wins_resp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and fieldPos >= -10 and fieldPos <= -1"))
 
 
         	# zip data
         	first_zip = zip(first_totals_resp, first_wins_resp)
-
         	second_short_zip = zip(second_short_totalsResp, second_short_winsResp)
         	second_mid_zip = zip(second_mid_totalsResp, second_mid_winsResp)
         	second_long_zip = zip(second_long_totalsResp, second_long_winsResp)
         	second_11_zip = zip(second_11_totalsResp, second_11_winsResp)
-
 		third_short_zip = zip(third_short_totalsResp, third_short_winsResp)
 		third_3_zip = zip(third_3_totalsResp, third_3_winsResp)
 		third_mid_zip = zip(third_mid_totalsResp, third_mid_winsResp)
 		third_long_zip = zip(third_long_totalsResp, third_long_winsResp)
 		third_11_zip = zip(third_11_totalsResp, third_11_winsResp)
-
         	fourth_short_zip = zip(fourth_short_totalsResp, fourth_short_winsResp)
         	fourth_mid_zip = zip(fourth_mid_totalsResp, fourth_mid_winsResp)
         	fourth_long_zip = zip(fourth_long_totalsResp, fourth_long_winsResp)
         	fourth_11_zip = zip(fourth_11_totalsResp, fourth_11_winsResp)
+        	fifth_zip = zip(fifth_totals_resp, fifth_wins_resp)
+		hred_zip = zip(hred_tot_resp, hred_wins_resp)
+		red_zip = zip(red_tot_resp, red_wins_resp)
+		white_zip = zip(white_tot_resp, white_wins_resp)
+		black_zip = zip(black_tot_resp, black_wins_resp)
+		blue_zip = zip(blue_tot_resp, blue_wins_resp)
+
 
 		# initialize dictionary to pass to html
 		d = collections.OrderedDict()
 		d["1st Down"] = first_zip
-
 		d["2nd and Short (1-3)"] = second_short_zip
 		d["2nd and Mid (4-6)"] = second_mid_zip
 		d["2nd and Long (7-10)"] = second_long_zip
 		d["2nd and 11+"] = second_11_zip
-
 		d["3rd and Short (1-3)"] = third_short_zip
 		d["3rd and 3"] = third_3_zip
 		d["3rd and Mid (4-6)"] = third_mid_zip
 		d["3rd and Long (7-10)"] = third_long_zip
 		d["3rd and 11+"] = third_11_zip
-
 		d["4th and Short (1-3)"] = fourth_short_zip
 		d["4th and Mid (4-6)"] = fourth_mid_zip
 		d["4th and Long (7-10)"] = fourth_long_zip
 		d["4th and 11+"] = fourth_11_zip
+		d["5th"] = fifth_zip
+		d["6. High Red"] = hred_zip 
+		d["7. Red"] = red_zip 
+		d["8. White"] = white_zip 
+		d["9. Blue"] = blue_zip 
+		d["10. Black"] = black_zip 
 
             	COLS = RP_TOTALS_COLS + RP_WINS_COLS
 
 		return render_template('sitRP.html', data=d, cols=COLS, content_type='application/json')
-            	#return render_template('reports.html', data=data, cols=COLS, titles=titles, content_type='application/json')
-
 
 
 	    elif select == 'backfields':
@@ -304,11 +358,9 @@ def reports():
 
             elif select == 'motions':
                 print("####### MOTIONS #######")
-
                 motionResp = queryFormatted(ALL_MOTION_COLS, ALL_MOTIONS_QUERY)
                 m = []
                 queries = []
-
 		d = {}
 
                 for i in motionResp:    # create list of all motion names
@@ -322,44 +374,80 @@ def reports():
 
 		data = zip(m, queries)
 
-                print(data)
-
                 return render_template('motions.html', d=d,m=m, data=data, cols=MOTION_TABLE_COLS, content_type='application/json')
 
                 # queries = list of queries for each motion name [query for oregon, ... , ]
                 # m = list of motion names
 
-		
+	    # DROPDOWN OPTIONS FOR INVENTORIES
+	    elif select == 'overallInv': 
+		r = inventories("Plays.genFormation != 'victory'")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
+
+	    # FIRST 
 	    elif select == 'first': 
-		print("####### FIRST  #######")
-		FIRST_QUERY = DOWNS_QUERY.format("Plays.down = 1")
-		firstResp = queryFormatted(['List', 'Count', 'Percent'], FIRST_QUERY)
-		
-		TOTALS_Q = TOTALS_QUERY.format('Plays.down =1')
-		tResp = queryFormatted(['t'], TOTALS_Q) 
-		total = tResp[0]['t']
-	
-		names = [] # list of all formations
-		for formation in firstResp: 
-			name = formation['List']
-			#name = name.replace("\'", '')
-			names.append(name)
+		r = inventories("Plays.down = 1")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
-		# loop through names and get run and pass tables for each formation in 1st down
-		data = {}
-		for name in names: 
-		# format with play name, r/p, down and distance
-			nameNew = "\'" + name + "\'"
-			runs = GEN_FORMATION.format(nameNew, '\'r\'', "Plays.down = 1")
-			passes = GEN_FORMATION.format(nameNew, '\'p\'', "Plays.down = 1")
-			
-			run_q = queryFormatted(['List', 'Count', 'Num'], runs)
-			pass_q = queryFormatted(['List', 'Count', 'Num'], passes)
+	    # SECOND
+	    elif select == 'second_13': 
+		r = inventories("Plays.down = 2 and Plays.dist >= 1 and Plays.dist <= 3")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
-			data[name] = run_q + pass_q
-		
-		print(data)
-		return render_template('inventories.html', data=firstResp, runPass=data, total=total, content_type='application/json')
+	    elif select == 'second_46': 
+		r = inventories("Plays.down = 2 and Plays.dist >= 4 and Plays.dist <= 6")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
+
+	    elif select == 'second_710': 
+		r = inventories("Plays.down = 2 and Plays.dist >= 7 and Plays.dist <= 10")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
+
+	    elif select == 'second_11': 
+		r = inventories("Plays.down = 2 and Plays.dist >= 11")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
+
+ 	    # THIRD
+	    elif select == 'third_12': 
+		r = inventories("Plays.down = 3 and Plays.dist >= 1 and Plays.dist <= 2")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
+
+	    elif select == 'third_3': 
+		r = inventories("Plays.down = 3 and Plays.dist = 3")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
+
+	    elif select == 'third_46': 
+		r = inventories("Plays.down = 3 and Plays.dist >= 4 and Plays.dist <= 6")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
+
+	    elif select == 'third_710': 
+		r = inventories("Plays.down = 3 and Plays.dist >= 7 and Plays.dist <= 10")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
+
+	    elif select == 'third_11': 
+		r = inventories("Plays.down = 3 and Plays.dist >= 11")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
+
+	    # FOURTH
+	    elif select == 'fourth_13': 
+		r = inventories("Plays.down = 4 and Plays.dist >= 1 and Plays.dist <= 3")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
+
+	    elif select == 'fourth_46': 
+		r = inventories("Plays.down = 4 and Plays.dist >= 4 and Plays.dist <= 6")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
+
+	    elif select == 'fourth_710': 
+		r = inventories("Plays.down = 4 and Plays.dist >= 7 and Plays.dist <= 10")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
+
+	    elif select == 'fourth_11': 
+		r = inventories("Plays.down = 4 and Plays.dist >= 11")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
+
+	    elif select == 'fifth': 
+		r = inventories("Plays.down = 5")
+		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
+
 
 ############################################################
 @app.route("/players", methods=['POST', 'GET'])
