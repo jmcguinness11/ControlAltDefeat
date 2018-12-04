@@ -23,7 +23,7 @@ RP_WINS_COLS = ['RP', 'WinCount', 'TotalRP', 'WinPercent']
 TOTALS_QUERY_DOWNS = "(SELECT  Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, CONCAT(TRUNCATE(100*count(Plays.rp)/max(tot.c), 2), '%') as PlayPercent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory' {0}) tot,  (select rp, count(*) as 'Wins'from Plays where winP like 'Y' group by rp) wins WHERE  Plays.genFormation != 'victory' {0} and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT  Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, CONCAT(TRUNCATE(100*count(Plays.rp)/max(tot.c), 2), '%') as Percent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory' {0}) tot WHERE  Plays.genFormation != 'victory' {0} and Plays.rp like 'N' GROUP BY Plays.rp);"
 
 
-TOTALS_QUERY = "(SELECT  Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, CONCAT(TRUNCATE(100*count(Plays.rp)/max(tot.c), 2), '%') as PlayPercent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory') tot,  (select rp, count(*) as 'Wins'from Plays where winP like 'Y'group by rp) wins WHERE  Plays.genFormation != 'victory' and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT  Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, CONCAT(TRUNCATE(100*count(Plays.rp)/max(tot.c), 2), '%') as Percent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory') tot WHERE  Plays.genFormation != 'victory' and Plays.rp like 'N' GROUP BY Plays.rp) ;"
+ALL_TOTALS_QUERY = "(SELECT  Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, CONCAT(TRUNCATE(100*count(Plays.rp)/max(tot.c), 2), '%') as PlayPercent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory') tot,  (select rp, count(*) as 'Wins'from Plays where winP like 'Y'group by rp) wins WHERE  Plays.genFormation != 'victory' and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT  Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, CONCAT(TRUNCATE(100*count(Plays.rp)/max(tot.c), 2), '%') as Percent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory') tot WHERE  Plays.genFormation != 'victory' and Plays.rp like 'N' GROUP BY Plays.rp) ;"
 
 # for sitrp
 WINS_QUERY_DOWNS = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', totalRP.Count as 'TotalRP',  CONCAT(TRUNCATE(100*count(Plays.rp)/totalRP.Count, 2), '%') as WinPercent from Plays, (select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y' {0}) tot, (select Plays.rp, count(Plays.rp) as Count from Plays where Plays.genFormation != 'victory' {0} and Plays.rp != 'N' group by Plays.rp) totalRP where Plays.genFormation != 'victory' {0} and Plays.winP like 'Y' and totalRP.rp = Plays.rp group by Plays.rp UNION ALL select '-' as RP, '-' as WinCount,'-' as TotalRP, '-' as WinPercent;"
@@ -153,9 +153,9 @@ def reports():
             if select == "totalRPN": # totalRPN
                 print("####### TOTAL RPN #######")
 
-                print("PRINTING TOTALS QUERY")
+		print(TOTALS_QUERY)
 
-                totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY)
+                totalsResp = queryFormatted(RP_TOTALS_COLS, ALL_TOTALS_QUERY)
                 winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY)
                 print("\ntotals resp\n")
                 print(totalsResp)
