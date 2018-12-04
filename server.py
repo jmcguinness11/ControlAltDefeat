@@ -150,6 +150,7 @@ def reports():
 
             print("selected dropdown value: " + str(select))
             # run query based on dropdown value
+
             if select == "totalRPN": # totalRPN
                 print("####### TOTAL RPN #######")
 
@@ -157,14 +158,15 @@ def reports():
 
                 totalsResp = queryFormatted(RP_TOTALS_COLS, ALL_TOTALS_QUERY)
                 winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY)
-                print("\ntotals resp\n")
-                print(totalsResp)
-                print("\nwins resp\n")
-                print(winsResp)
-                print("\n")
+                #print("\ntotals resp\n")
+                #print(totalsResp) 
+                #print("\nwins resp\n")
+                #print(winsResp)
+                #print("\n")
 
                 COLS = RP_TOTALS_COLS + RP_WINS_COLS
                 zipdata = zip(totalsResp, winsResp)
+		print(zipdata)
 
                 return render_template('reports.html', data=zipdata, cols=COLS, content_type='application/json')
 
@@ -357,7 +359,7 @@ def reports():
 			data[name] = run_q + pass_q
 		
 		print(data)
-		return render_template('inventories.html', data=firstResp, total=total, content_type='application/json')
+		return render_template('inventories.html', data=firstResp, runPass=data, total=total, content_type='application/json')
 
 ############################################################
 @app.route("/players", methods=['POST', 'GET'])
