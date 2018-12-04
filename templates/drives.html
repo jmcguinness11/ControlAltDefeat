@@ -9,7 +9,7 @@
                 <meta name="description" content="">
                     <meta name="author" content="">
 
-                        <title>index.html</title>
+                        <title>Drives</title>
 
                         <!-- Bootstrap core CSS -->
                         <link href="{{url_for('static', filename='bootstrap.min.css')}}" rel="stylesheet">
@@ -39,7 +39,7 @@
                         <a class="nav-link" href="{{url_for('reports')}}">Reports</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('plays')}}">Plays</a>
+                        <a class="nav-link" href="{{url_for('drives')}}">Drives</a>
                     </li>
                 </ul>
             </div>
@@ -52,7 +52,7 @@
             <br><h4>Drive Charts</h4><br>
 
                 {% if result %}
-		<form name="generateDrives" action = "{{url_for('plays') }}" method = "POST" id="generateDrives">
+		<form name="generateDrives" action = "{{url_for('drives') }}" method = "POST" id="generateDrives">
 		    <input type="submit" value="Generate Drives">
 		    <input type="hidden" name="form_type" value="GENERATE_DRIVES">
 	    	    <select id="selectGame" name="selectGame">
@@ -103,7 +103,6 @@
                     <th>FieldPos</th>
                     <th>Gain</th>
                     <th>Result</th>
-                    <th>Explosive?</th>
                     <th></th>
                 </tr>
 
@@ -120,7 +119,6 @@
                         <td> <input style="border:none" type="text" name="FieldPos"   value='{{row["FieldPos"]}}' /> </td>
                         <td> <input style="border:none" type="text" name="Gain"   value='{{row["Gain"]}}' /> </td>
                         <td> <input style="border:none" type="text" name="Result"   value='{{row["Result"]}}' /> </td>
-                        <td> <input style="border:none" type="text" name="Explosive"   value='{{row["Explosive"]}}' /> </td>
                     </tr>
 
                 {% endfor %}
@@ -133,7 +131,6 @@
                         <td> <input style="border:none" type="text" name="FieldPos"   value='' /> </td>
                         <td> <input style="border:none" type="text" name="Gain"   value='' /> </td>
                         <td> <input style="border:none" type="text" name="Result"   value='' /> </td>
-                        <td> <input style="border:none" type="text" name="Explosive"   value='' /> </td>
                     </tr>
 		{% endfor %}
                 {% endif %}

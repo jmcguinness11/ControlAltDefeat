@@ -38,9 +38,11 @@ $(window).bind('load', function() {
 		color = "rgb(205, 201, 201)"
                 
                 //set color to white if it's a break between series
-                console.log(series_val)
                 if(isNaN(series_val)) {
                     color = "rgb(255, 255, 255)"
+                } else {
+                    $(gain).text("No gain")
+                    console.log($(gain).text())
                 }
                 all_inputs = $($tds).find('input').each(function() {
                     in_list = $(this).get(0)

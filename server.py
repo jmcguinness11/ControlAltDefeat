@@ -57,7 +57,7 @@ DOWNS_QUERY = "select distinct Plays.genFormation as 'List', count(Plays.down) a
 
 TOTALS_QUERY = "select count(*) as 't' from Plays where {0};"
 
-# query to get running and passing plays for each GENFORMATION
+# query to get running and passing drives for each GENFORMATION
 	# fill in with: {genFormation}, {R or P}, {down and distance}
 GEN_FORMATION = "select distinct Plays.genPlay as 'List', count(*) as 'Count', totals.Total as Num from Plays, (select count(*) as Total from Plays where Plays.genFormation = {0}  and Plays.rp = {1} and {2}) totals where Plays.genFormation = {0} and Plays.rp = {1} and {2} group by Plays.genPlay order by count(*) desc;"
 
@@ -136,8 +136,8 @@ def home():
 
 
 #TODO - eventually change to "drives"
-@app.route("/plays", methods=['GET', 'POST'])
-def plays():
+@app.route("/drives", methods=['GET', 'POST'])
+def drives():
     # Search query
     if request.method == "GET": # load queries
         eventquery = '''SELECT id, game FROM Events'''
@@ -147,7 +147,7 @@ def plays():
             if a['game'] not in gameList:
                 gameList.append(a['game'])
 	print(gameList)
-        return render_template('plays.html', result=gameList, content_type='application/json')
+        return render_template('drives.html', result=gameList, content_type='application/json')
 
     form = request.form.get("form_type")
     if request.method == "POST":
@@ -158,13 +158,13 @@ def plays():
 
 	    seriesResults = []
             for t in totalSeriesNums:
-                playquery = "SELECT down, dist, rp, fieldPos, gain, result, explosive FROM Plays, Events WHERE Plays.event_id = Events.id and Events.game=\'" + str(select) + "\' and Events.series=" + t['series']
+                playquery = "SELECT down, dist, rp, fieldPos, gain, result FROM Plays, Events WHERE Plays.event_id = Events.id and Events.game=\'" + str(select) + "\' and Events.series=" + t['series']
                 re = queryFormatted(DRIVE_COLS, playquery)
 		for r in re:
 		    r['Series'] = t['series']
                 seriesResults.append(re)
 	    print(seriesResults)
-            return render_template('plays.html', data=seriesResults, content_type='application/json')
+            return render_template('drives.html', data=seriesResults, content_type='application/json')
 
 
 ############################################################
