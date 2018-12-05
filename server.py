@@ -160,18 +160,19 @@ def totalRPNDownload(INPUT):
 def sitRPNDownload(INPUT):
     for key in INPUT:
         if key == '1st Down':
-            for item in INPUT['1st Down']
+            for item in INPUT['1st Down']:
                 for dictionary in item:
-                    if dictionary['RP'] == 'R':
-		        if 'PlayCount' in dictionary:
-                            1stRunCount = dictionary['PlayCount']
-                            1stRunPercent = dictionary['PlayPercent']
-			    1stTotalPlays = dictionary['PlayTotal']
-                        if 'WinCount' in dictionary:
-                            1stRunWin = dictionary['WinCount']
-                            1stRunWinPercent = dictionary['WinPercent']
+                	if dictionary['RP'] == 'R':
+				print(dictionary['RP'])
+		        if 'PlayCount' in dictionary.keys():	
+			    firstRunCount = dictionary['PlayCount']
+                            firstRunPercent = dictionary['PlayPercent']
+			    firstTotalPlays = dictionary['PlayTotal']
+                        if 'WinCount' in dictionary.keys():
+                            firstRunWin = dictionary['WinCount']
+                            firstRunWinPercent = dictionary['WinPercent']
     print('======================================================')
-    print(1stRunCount)
+    print(firstRunCount)
     print('======================================================')
 
 app = Flask(__name__)
@@ -387,6 +388,10 @@ def reports():
 		d["10. Black"] = black_zip 
 
             	COLS = RP_TOTALS_COLS + RP_WINS_COLS
+
+		if download == "DOWNLOAD":
+			print("DOWNLOADING TOTALRPN")
+			sitRPNDownload(d)
 		
 		return render_template('sitRP.html', data=d, cols=COLS, content_type='application/json')
 
