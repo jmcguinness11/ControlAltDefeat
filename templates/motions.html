@@ -65,6 +65,7 @@ input.tableinput { border-width:0px;border:none;}
             <form  name="generateReport" action = "{{ url_for('reports') }}" method = "POST" id="generateReport">
                 <input type="submit" value="Generate Report">
                 <input type="hidden" name="form_type" value="GENERATE_REPORT">
+                <input type="submit" name="download" value="DOWNLOAD">
                 <select id="selectReport" name="selectReport">
                     <option value="totalRPN">Total RPN</option>
                     <option value="sitRP">Situational Run/Pass</option>
@@ -108,17 +109,19 @@ input.tableinput { border-width:0px;border:none;}
 			<th>{{col}}</th>
 			{% endfor %} </tr>
 
-			<tr>{% for i in motion[1] %}
-				{% for j in i%}
-					<td>{{ i[j] }}</td>
-				{% endfor %}</tr>
+			<tr>{% for i in motion %}
+                {% for j in i %}
+                <td>{{j['RUN']}}</td>
+                <td>{{j['PASS']}}</td>
+                <td>{{j['TOTAL']}}</td></tr>
+                {% endfor %}
 			{% endfor %}
 
             	</table><br>
 	{% endfor %}
 	{% endif %}
 
-                <br><br><button>Download</button>
+
             </body>
         </div>
 

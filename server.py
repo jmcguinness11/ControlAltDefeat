@@ -5,6 +5,7 @@ import MySQLdb
 import atexit
 import itertools
 import collections
+import csv
 
 #global variables for column names
 PLAYER_COLS = ['name', 'position', 'playerTag', 'height', 'weight', 'active']
@@ -124,7 +125,7 @@ def inventories(regex):
 
 def totalRPNDownload(INPUT):
     for item in INPUT:
-        for dictionary in intem:
+        for dictionary in item:
             if dictionary['RP'] == 'R':
                 if 'PlayCount' in dictionary:
                     runCount = dictionary['PlayCount']
@@ -231,6 +232,7 @@ def reports():
 		
 		if download == "DOWNLOAD":
 			print("DOWNLOADING TOTALRPN")
+			totalRPNDownload(zipdata)
 
 
                 return render_template('reports.html', data=zipdata, cols=COLS, content_type='application/json')
@@ -367,7 +369,9 @@ def reports():
 		d["10. Black"] = black_zip 
 
             	COLS = RP_TOTALS_COLS + RP_WINS_COLS
-
+		
+		print("SITUATIONAL RP DATA")
+		print(d)
 
 		return render_template('sitRP.html', data=d, cols=COLS, content_type='application/json')
 
