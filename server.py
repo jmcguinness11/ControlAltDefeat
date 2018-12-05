@@ -234,10 +234,6 @@ def reports():
 			print("DOWNLOADING TOTALRPN")
 			totalRPNDownload(zipdata)
 
-		print("TOTAL RPN COLS")
-		print(COLS)
-		print("TOTAL RPN DATA")
-		print(zipdata)
                 return render_template('reports.html', data=zipdata, cols=COLS, content_type='application/json')
 
 
@@ -324,7 +320,6 @@ def reports():
 		black_tot_resp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and fieldPos >= -10 and fieldPos <= -1"))
 		black_wins_resp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and fieldPos >= -10 and fieldPos <= -1"))
 
-
         	# zip data
         	first_zip = zip(first_totals_resp, first_wins_resp)
         	second_short_zip = zip(second_short_totalsResp, second_short_winsResp)
@@ -347,11 +342,14 @@ def reports():
 		black_zip = zip(black_tot_resp, black_wins_resp)
 		blue_zip = zip(blue_tot_resp, blue_wins_resp)
 
-
 		# initialize dictionary to pass to html
 		d = collections.OrderedDict()
 		d["1st Down"] = first_zip
 		d["2nd and Short (1-3)"] = second_short_zip
+		
+		print("SITUATIONAL RP DATA")
+		print(d)
+
 		d["2nd and Mid (4-6)"] = second_mid_zip
 		d["2nd and Long (7-10)"] = second_long_zip
 		d["2nd and 11+"] = second_11_zip
@@ -373,9 +371,6 @@ def reports():
 
             	COLS = RP_TOTALS_COLS + RP_WINS_COLS
 		
-		print("SITUATIONAL RP DATA")
-		print(d)
-
 		return render_template('sitRP.html', data=d, cols=COLS, content_type='application/json')
 
 

@@ -109,12 +109,19 @@ input.tableinput { border-width:0px;border:none;}
 			<th>{{col}}</th>
 			{% endfor %} </tr>
 
-			<tr>{% for i in data[motion] %}
-				{% for j in i%}
-					{% for k in j %}
-						<td>{{ j[k] }}</td>
-					{% endfor %}
-				{% endfor %}</tr>
+			<tr>{% for row in data[motion] %}
+
+                    <td>{{row[0]['RP']}}</td>
+                    <td>{{row[0]['PlayCount']}}</td>
+                    <td>{{row[0]['PlayTotal']}}</td>
+                    <td>{{row[0]['PlayPercent']}}</td>
+                    <td>{{row[1]['RP']}}</td>
+                    <td>{{row[1]['WinCount']}}</td>
+                    <td>{{row[1]['TotalRP']}}</td>
+                    <td>{{row[1]['WinPercent']}}</td>
+                    </tr>
+
+            </tr>
 			{% endfor %}
 
             	</table><br>
