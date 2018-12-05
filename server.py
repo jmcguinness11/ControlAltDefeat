@@ -234,7 +234,10 @@ def reports():
 			print("DOWNLOADING TOTALRPN")
 			totalRPNDownload(zipdata)
 
-
+		print("TOTAL RPN COLS")
+		print(COLS)
+		print("TOTAL RPN DATA")
+		print(zipdata)
                 return render_template('reports.html', data=zipdata, cols=COLS, content_type='application/json')
 
 
@@ -243,7 +246,7 @@ def reports():
 
 		# first down
                 first_totals_resp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 1") )
-                first_wins_resp = queryFormatted(RP_TOTALS_COLS,WINS_QUERY_DOWNS.format("and Plays.down = 1") )
+                first_wins_resp = queryFormatted(RP_WINS_COLS, WINS_QUERY_DOWNS.format("and Plays.down = 1") )
 
 		# second and short 1-3
                 second_short_totalsResp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 2 and Plays.dist >= 1 and Plays.dist <= 3"))
@@ -414,6 +417,8 @@ def reports():
                     queries.append(resp)
 
 		data = zip(m, queries)
+		print("motion data")
+		print(data[0])
 
                 return render_template('motions.html', d=d,m=m, data=data, cols=MOTION_TABLE_COLS, content_type='application/json')
 
