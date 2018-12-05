@@ -122,6 +122,39 @@ def inventories(regex):
 
 	return [firstResp, RUNS, PASSES, total]
 
+def totalRPNDownload(INPUT):
+    for item in INPUT:
+        for dictionary in intem:
+            if dictionary['RP'] == 'R':
+                if 'PlayCount' in dictionary:
+                    runCount = dictionary['PlayCount']
+                    runPercent = dictionary['PlayPercent']
+                    totalPlays = dictionary['PlayTotal']
+                if 'WinCount' in dictionary:
+		    runWin = dictionary['WinCount']
+		    runWinPercent = dictionary['WinPercent']
+            elif dictionary['RP'] == 'P':
+	        if 'PlayCount' in dictionary:
+		    passCount = dictionary['PlayCount']
+		    passPercent = dictionary['PlayPercent']
+                    totalPlays = dictionary['PlayTotal']
+                if 'WinCount' in dictionary:
+		    passWin = dictionary['WinCount']
+		    passWinPercent = dictionary['WinPercent']
+            elif dictionary['RP'] == 'N':
+		nCount = dictionary['PlayCount']
+		nPercent = dictionary['PlayPercent']
+
+    runString = runCount+' of '+totalPlays
+    runWinString = runWin+' of '+runCount
+    passString = passCount+' of '+totalPlays
+    passWinString = passWin+' of '+passCount
+    nString = nCount+' of'+totalPlays
+    data = [[' ', 'R/P', 'Count', 'Percent', 'W/L', 'Percent'], ['1', 'R', runString, runPercent, runWinString, runWinPercent], ['2', 'P', passString, passPercent, passWinString, passWinPercent], ['3', 'N', nString, nPercent, ' ', ' ']]
+    with open('TotalRPNdl.csv', 'w') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(data)
+    csvfile.close() 
 
 app = Flask(__name__)
 
