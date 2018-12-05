@@ -158,22 +158,38 @@ def totalRPNDownload(INPUT):
     csvfile.close() 
 
 def sitRPNDownload(INPUT):
-    for key in INPUT:
-        if key == '1st Down':
-            for item in INPUT['1st Down']:
-                for dictionary in item:
-                	if dictionary['RP'] == 'R':
-				print(dictionary['RP'])
-		        if 'PlayCount' in dictionary.keys():	
-			    firstRunCount = dictionary['PlayCount']
-                            firstRunPercent = dictionary['PlayPercent']
-			    firstTotalPlays = dictionary['PlayTotal']
-                        if 'WinCount' in dictionary.keys():
-                            firstRunWin = dictionary['WinCount']
-                            firstRunWinPercent = dictionary['WinPercent']
-    print('======================================================')
-    print(firstRunCount)
-    print('======================================================')
+    runCount = '0'
+    runPercent = '0'
+    passCount = '0'
+    passPercent = '0'
+    runWin = '0'
+    passWin = '0'
+    runWinPercent = '0'
+    passWinPercent = '0'
+    for item in INPUT:
+	for dictionary in item:
+	    if dictionary['RP'] == 'R':
+		if 'PlayCount' in dictionary:
+		    runCount = dictionary['PlayCount']
+		    runPercent = dictionary['PlayPercent']
+		    totalPlays = dictionary['PlayTotal']
+		if 'WinCount' in dictionary:
+		    runWin = dictionary['WinCount']
+		    runWinPercent = dictionary['WinPercent']
+	    elif dictionary['RP'] == 'P':
+		if 'PlayCount' in dictionary:
+		    passCount = dictionary['PlayCount']
+		    passPercent = dictionary['PlayPercent']
+		    totalPlays = dictionary['PlayTotal']
+		if 'WinCount' in dictionary:
+		    passWin = dictionary['WinCount']
+		    passWinPercent = dictionary['WinPercent']
+    runString = runCount+' of '+totalPlays
+    runWinString = runWin+' of '+runCount
+    passString = passCount+' of '+totalPlays
+    passWinString = passWin+' of '+passCount
+    returnedList = [[' ', 'Count', 'Percent', 'W/L', 'Percent'], ['R', runString, runPercent, runWinString, runWinPercent], ['P', passString, passPercent, passWinString, passWinPercent]]
+    return returnedList
 
 app = Flask(__name__)
 
@@ -340,25 +356,48 @@ def reports():
 
         	# zip data
         	first_zip = zip(first_totals_resp, first_wins_resp)
-        	second_short_zip = zip(second_short_totalsResp, second_short_winsResp)
+        	firstList = sitRPNDownload(first_zip)
+		second_short_zip = zip(second_short_totalsResp, second_short_winsResp)
+		second_short = sitRPNDownload(second_short_zip)
         	second_mid_zip = zip(second_mid_totalsResp, second_mid_winsResp)
-        	second_long_zip = zip(second_long_totalsResp, second_long_winsResp)
-        	second_11_zip = zip(second_11_totalsResp, second_11_winsResp)
+        	second_mid = sitRPNDownload(second_mid_zip)
+		second_long_zip = zip(second_long_totalsResp, second_long_winsResp)
+        	second_long = sitRPNDownload(second_long_zip)
+		second_11_zip = zip(second_11_totalsResp, second_11_winsResp)
+		second_11 = sitRPNDownload(second_11_zip)
 		third_short_zip = zip(third_short_totalsResp, third_short_winsResp)
+		third_short = sitRPNDownload(third_short_zip)
 		third_3_zip = zip(third_3_totalsResp, third_3_winsResp)
+		third_3 = sitRPNDownload(third_3_zip)
 		third_mid_zip = zip(third_mid_totalsResp, third_mid_winsResp)
+		third_mid = sitRPNDownload(third_mid_zip)
 		third_long_zip = zip(third_long_totalsResp, third_long_winsResp)
+		third_long = sitRPNDownload(third_long_zip)
 		third_11_zip = zip(third_11_totalsResp, third_11_winsResp)
-        	fourth_short_zip = zip(fourth_short_totalsResp, fourth_short_winsResp)
-        	fourth_mid_zip = zip(fourth_mid_totalsResp, fourth_mid_winsResp)
-        	fourth_long_zip = zip(fourth_long_totalsResp, fourth_long_winsResp)
-        	fourth_11_zip = zip(fourth_11_totalsResp, fourth_11_winsResp)
-        	fifth_zip = zip(fifth_totals_resp, fifth_wins_resp)
+        	third_11 = sitRPNDownload(third_11_zip)
+		fourth_short_zip = zip(fourth_short_totalsResp, fourth_short_winsResp)
+        	fourth_short = sitRPNDownload(fourth_short_zip)
+		fourth_mid_zip = zip(fourth_mid_totalsResp, fourth_mid_winsResp)
+        	fourth_mid = sitRPNDownload(fourth_mid_zip)
+		fourth_long_zip = zip(fourth_long_totalsResp, fourth_long_winsResp)
+        	fourth_long = sitRPNDownload(fourth_long_zip)
+		fourth_11_zip = zip(fourth_11_totalsResp, fourth_11_winsResp)
+        	fourth_11 = sitRPNDownload(fourth_11_zip)
+		fifth_zip = zip(fifth_totals_resp, fifth_wins_resp)
+		fifthList = sitRPNDownload(fifth_zip)
 		hred_zip = zip(hred_tot_resp, hred_wins_resp)
+		hredList = sitRPNDownload(hred_zip)
 		red_zip = zip(red_tot_resp, red_wins_resp)
+		redList = sitRPNDownload(red_zip)
 		white_zip = zip(white_tot_resp, white_wins_resp)
+		whiteList = sitRPNDownload(white_zip)
 		black_zip = zip(black_tot_resp, black_wins_resp)
+		blackList = sitRPNDownload(black_zip)
 		blue_zip = zip(blue_tot_resp, blue_wins_resp)
+		blueList = sitRPNDownload(blue_zip)
+
+		bigList = firstList + second_short + second_mid + second_long + second_11 + third_short + third_3 + third_mid + third_long + third_11 + fourth_short + fourth_mid + fourth_long + fourth_11 + fifthList + hredList + redList + whiteList + blackList + blueList
+		print(bigList)
 
 		# initialize dictionary to pass to html
 		d = collections.OrderedDict()
@@ -366,7 +405,6 @@ def reports():
 		d["2nd and Short (1-3)"] = second_short_zip
 		
 		print("SITUATIONAL RP DATA")
-		print(d)
 
 		d["2nd and Mid (4-6)"] = second_mid_zip
 		d["2nd and Long (7-10)"] = second_long_zip
@@ -391,8 +429,10 @@ def reports():
 
 		if download == "DOWNLOAD":
 			print("DOWNLOADING TOTALRPN")
-			sitRPNDownload(d)
-		
+			with open('sitRPNdl.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(bigList)
+			csvfile.close()		
 		return render_template('sitRP.html', data=d, cols=COLS, content_type='application/json')
 
 
