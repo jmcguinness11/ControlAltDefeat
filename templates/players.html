@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 
 <style>
-   /* tr:nth-child(even) { background-color: #d8d8d8;}
-
-    tr:hover {background-color:#f5f5f5;}*/
 
     input.tableinput { border-width:0px;border:none;}
 
@@ -62,25 +59,10 @@
                     <th>Player Tag</th>
                     <th>Height</th>
                     <th>Weight</th>
-                    <th>Active?</th>
-                    <th></th>
+                    <th>Edit</th>
                 </tr>
 
                 {% for row in result %}
-
-                <!-- FORM TYPE: EDIT-->
-<!--                <form action = "{{ url_for('players') }}" method = "POST" id="edit">-->
-<!--                    <tr>-->
-<!--                        <td > {{row["name"]}}</td>-->
-<!--                        <td > {{row["position"]}}</td>-->
-<!--                        <td > {{ row["playerTag"]}}</td>-->
-<!--                        <td > {{ row["height"]}}</td>-->
-<!--                        <td > {{ row["weight"]}}</td>-->
-<!--                        <td > {{ row["active"]}}</td>-->
-<!--                        <td><input type = "submit" value = "Edit" /></td>-->
-<!--                    </tr>-->
-<!--                    <input type="hidden" name="form_type" value="EDIT">-->
-<!--                </form>-->
 
                 <form action = "{{ url_for('players') }}" method = "POST" id="edit" autocomplete="off">
                     <tr>
@@ -89,8 +71,7 @@
                         <td width="20%"> <input style="border:none" type="text" name="playerTag" value='{{row["playerTag"]}}' required/> </td>
                         <td width="10%"> <input style="border:none" type="text" name="height"   value='{{row["height"]}}' /> </td>
                         <td width="10%"> <input style="border:none" type="text" name="weight"   value='{{row["weight"]}}' /> </td>
-                        <td> <input style="border:none" type="text" name="active"   value='{{row["active"]}}' /> </td>
-                        <td><input type = "submit" value = "Edit" />
+                        <td><input type = "submit" value = "Edit" /></td>
                     </tr>
                     <input type="hidden" name="form_type" value="EDIT">
                 </form>
@@ -106,7 +87,7 @@
             <fieldset>
                 <form action = "{{ url_for('players') }}" method = "POST" id="add">
                     <br>
-                    <h5><u>Insert New Player</h5></u>
+                    <h4><u>Insert New Player</h4></u>
                     Player Name<br>
                     <input id="name" type = "text" name = "name" /></br>
 
@@ -123,7 +104,7 @@
                     <input id="weight" type = "text" name = "weight" /><br>
 
                     Active?<br>
-                    <input id="active" type = "text" name = "active" /><br>
+                    <input  id="active" type = "text" name = "active" /><br>
 
                     <input type ="submit" value = "Submit" /><br>
                     <input type="hidden" name="form_type" value="INSERT">
@@ -134,7 +115,7 @@
             <!-- FORM TYPE: DELETE (by playerTag)-->
             <div class="column">
             <br>
-            <h5><u>Remove a Player</h5></u>
+            <h4><u>Remove a Player</h4></u>
             <br>
             <form action = "{{ url_for('players') }}" method = "POST" id="delete">
                 {% for row in result %}
