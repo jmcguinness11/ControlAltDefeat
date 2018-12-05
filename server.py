@@ -178,6 +178,8 @@ def reports():
 
     # get dropdown option
     form = request.form.get("form_type")
+    download = request.form.get("download")
+
     if request.method == "POST":
         if form == 'GENERATE_REPORT':
             select = request.form.get("selectReport")
@@ -188,14 +190,15 @@ def reports():
             if select == "totalRPN": # totalRPN
                 print("####### TOTAL RPN #######")
 
-		print(TOTALS_QUERY)
-
                 totalsResp = queryFormatted(RP_TOTALS_COLS, ALL_TOTALS_QUERY)
                 winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY)
 
                 COLS = RP_TOTALS_COLS + RP_WINS_COLS
                 zipdata = zip(totalsResp, winsResp)
-		print(zipdata)
+		
+		if download == "DOWNLOAD":
+			print("DOWNLOADING TOTALRPN")
+
 
                 return render_template('reports.html', data=zipdata, cols=COLS, content_type='application/json')
 
@@ -331,6 +334,7 @@ def reports():
 		d["10. Black"] = black_zip 
 
             	COLS = RP_TOTALS_COLS + RP_WINS_COLS
+
 
 		return render_template('sitRP.html', data=d, cols=COLS, content_type='application/json')
 
