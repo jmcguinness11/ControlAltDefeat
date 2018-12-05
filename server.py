@@ -157,6 +157,23 @@ def totalRPNDownload(INPUT):
         writer.writerows(data)
     csvfile.close() 
 
+def sitRPNDownload(INPUT):
+    for key in INPUT:
+        if key == '1st Down':
+            for item in INPUT['1st Down']
+                for dictionary in item:
+                    if dictionary['RP'] == 'R':
+		        if 'PlayCount' in dictionary:
+                            1stRunCount = dictionary['PlayCount']
+                            1stRunPercent = dictionary['PlayPercent']
+			    1stTotalPlays = dictionary['PlayTotal']
+                        if 'WinCount' in dictionary:
+                            1stRunWin = dictionary['WinCount']
+                            1stRunWinPercent = dictionary['WinPercent']
+    print('======================================================')
+    print(1stRunCount)
+    print('======================================================')
+
 app = Flask(__name__)
 
 @app.route("/")
