@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 
 <style>
+   /* tr:nth-child(even) { background-color: #d8d8d8;}
+
+    tr:hover {background-color:#f5f5f5;}*/
 
     input.tableinput { border-width:0px;border:none;}
 
@@ -47,7 +50,7 @@
         </nav>
 
         <div class="container">
-            <br><h1 style="text-align:center">Players</h1><br>
+		<br><h1 style="text-align:center">Players</h1><br>
             <br>
 
             <table id="players" align="center" style="width:80%" border = 1>
@@ -57,9 +60,10 @@
                     <th>Player Name</th>
                     <th>Position</th>
                     <th>Player Tag</th>
-                    <th>Height</th>
-                    <th>Weight</th>
-                    <th>Edit</th>
+                    <th>Height (in)</th>
+                    <th>Weight (lbs)</th>
+                    <th></th>
+                    <th></th>
                 </tr>
 
                 {% for row in result %}
@@ -71,7 +75,8 @@
                         <td width="20%"> <input style="border:none" type="text" name="playerTag" value='{{row["playerTag"]}}' required/> </td>
                         <td width="10%"> <input style="border:none" type="text" name="height"   value='{{row["height"]}}' /> </td>
                         <td width="10%"> <input style="border:none" type="text" name="weight"   value='{{row["weight"]}}' /> </td>
-                        <td><input type = "submit" value = "Edit" /></td>
+                        <td> <input type="hidden" style="border:none" type="text" name="active"   value='{{row["active"]}}' /> </td>
+                        <td><input type = "submit" value = "Edit" />
                     </tr>
                     <input type="hidden" name="form_type" value="EDIT">
                 </form>
@@ -87,7 +92,7 @@
             <fieldset>
                 <form action = "{{ url_for('players') }}" method = "POST" id="add">
                     <br>
-                    <h4><u>Insert New Player</h4></u>
+                    <h5><u>Insert New Player</h5></u>
                     Player Name<br>
                     <input id="name" type = "text" name = "name" /></br>
 
@@ -97,14 +102,14 @@
                     Player Tag<br>
                     <input id="playerTag" type = "text" name = "playerTag" required/><br>
 
-                    Height<br>
+                    Height (in)<br>
                     <input id="height" type = "text" name = "height" /><br>
 
-                    Weight<br>
+                    Weight (lbs)<br>
                     <input id="weight" type = "text" name = "weight" /><br>
 
                     Active?<br>
-                    <input  id="active" type = "text" name = "active" /><br>
+                    <input id="active" type = "text" name = "active" /><br>
 
                     <input type ="submit" value = "Submit" /><br>
                     <input type="hidden" name="form_type" value="INSERT">
@@ -115,7 +120,7 @@
             <!-- FORM TYPE: DELETE (by playerTag)-->
             <div class="column">
             <br>
-            <h4><u>Remove a Player</h4></u>
+            <h5><u>Remove a Player</h5></u>
             <br>
             <form action = "{{ url_for('players') }}" method = "POST" id="delete">
                 {% for row in result %}
@@ -133,3 +138,4 @@
 
     </div>
 </html>
+
