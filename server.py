@@ -52,8 +52,6 @@ BACKFIELD_QUERY = "select runs.r as RUN, pass.p as PASS, total.tot as TOTAL from
 
 # get downs for 'where down = x and dist <= ...' 
 
-#DOWNS_QUERY = "select distinct Plays.genFormation as 'List', count(Plays.down) as 'Count', CONCAT(TRUNCATE((count(Plays.down)/tot.t)*100, 2), '%') as Percent from Plays, (select 'Total', count(*) as 't' from Plays where {0}) tot where {0}  group by Plays.genFormation " # fill in 'where down = {1 and dist = 5}
-
 DOWNS_QUERY = "select distinct Plays.genFormation as 'List', count(Plays.down) as 'Count', CONCAT(TRUNCATE((count(Plays.down)/tot.t)*100, 2), '%') as Percent from Plays, (select 'Total', count(*) as 't' from Plays where Plays.genFormation != 'victory' and {0}) tot where Plays.genFormation != 'victory' and {0} group by Plays.genFormation order by count(*) desc;"
 
 TOTALS_QUERY = "select count(*) as 't' from Plays where {0};"
@@ -201,9 +199,6 @@ def main():
 def home():
     return render_template('index.html')
 
-
-
-#TODO - eventually change to "drives"
 @app.route("/drives", methods=['GET', 'POST'])
 def drives():
     # Search query
@@ -214,7 +209,6 @@ def drives():
         for a in allGames:
             if a['game'] not in gameList:
                 gameList.append(a['game'])
-	print(gameList)
         return render_template('drives.html', result=gameList, content_type='application/json')
 
     form = request.form.get("form_type")
@@ -231,7 +225,6 @@ def drives():
 		for r in re:
 		    r['Series'] = t['series']
                 seriesResults.append(re)
-	    print(seriesResults)
             return render_template('drives.html', data=seriesResults, content_type='application/json')
 
 
@@ -397,7 +390,6 @@ def reports():
 		blueList = sitRPNDownload(blue_zip)
 
 		bigList = firstList + second_short + second_mid + second_long + second_11 + third_short + third_3 + third_mid + third_long + third_11 + fourth_short + fourth_mid + fourth_long + fourth_11 + fifthList + hredList + redList + whiteList + blackList + blueList
-		print(bigList)
 
 		# initialize dictionary to pass to html
 		d = collections.OrderedDict()
@@ -440,7 +432,6 @@ def reports():
 		print("###BACKFIELDS#####")
 		backResp = queryFormatted(ALL_BACKFIELD_COLS, ALL_BACKFIELD_QUERY)
 
-		print(backResp)
 		b = []
 		queries = []
 		d = {}
@@ -475,7 +466,6 @@ def reports():
 
 		data = zip(m, queries)
 		print("motion data")
-		print(data[0])
 
                 return render_template('motions.html', d=d,m=m, data=data, cols=MOTION_TABLE_COLS, content_type='application/json')
 
@@ -583,11 +573,14 @@ def players():
         query = 'UPDATE Players SET name="{}", position="{}", playerTag="{}", ' \
                 'height="{}", weight="{}", active={} WHERE playerTag="{}";'.format(
                 name, position, playerTag, height, weight, active, playerTag)
+        
+        try:
+            cur.execute(query)
+            cur.fetchall()
+        except:
+            flash("Invalid attribute entered - database not updated")
 
-        cur.execute(query)
-        cur.fetchall()
         r = queryFormatted(PLAYER_COLS, PLAYERS_GET_QUERY)
-
         display = [record for record in r]
 
         return render_template('players.html', result=display, content_type='application/json')
@@ -609,8 +602,12 @@ def players():
 
         print("Player to insert: " + insert_name) # debug
 
-        cur.execute(query)
-        cur.fetchall()
+        try:
+            cur.execute(query)
+            cur.fetchall()
+        except:
+            flash("Invalid attribute entered - database not updated")
+
         r = queryFormatted(PLAYER_COLS, PLAYERS_GET_QUERY)
         display = [record for record in r]
 
@@ -636,4 +633,5 @@ if __name__ == "__main__":
         print("Usage: python server.py PORT")
         exit(1)
     PORT = sys.argv[1]
+    app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
     app.run(host='0.0.0.0', port=PORT, threaded=True)
