@@ -42,7 +42,7 @@
                             <a class="nav-link" href="{{url_for('reports')}}">Reports</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{url_for('drives')}}">Plays</a>
+                            <a class="nav-link" href="{{url_for('drives')}}">Drives</a>
                         </li>
                     </ul>
                 </div>
@@ -85,7 +85,7 @@
                 {% endif %}
 
             </table><br>
-            
+
             {% for message in get_flashed_messages() %}
                 <div class="alert alert-warning">
                     <button type="button" class="close" data-dismiss="alert">
@@ -147,4 +147,3 @@
 
     </div>
 </html>
-
