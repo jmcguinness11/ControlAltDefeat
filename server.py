@@ -103,7 +103,7 @@ def totalRPNDownload(INPUT):
     passWinString = passWin+' of '+passCount
     nString = nCount+' of'+totalPlays
     data = [[' ', 'R/P', 'Count', 'Percent', 'W/L', 'Percent'], ['1', 'R', runString, runPercent, runWinString, runWinPercent], ['2', 'P', passString, passPercent, passWinString, passWinPercent], ['3', 'N', nString, nPercent, ' ', ' ']]
-    with open('TotalRPNdl.csv', 'w') as csvfile:
+    with open('Generated_Reports/TotalRPNdl.csv', 'w') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerows(data)
     csvfile.close() 
@@ -159,7 +159,7 @@ def motionsDownload(INPUT):
 	count = 0
 	resultingList = [[motion,' ',' ',' ',' ',' '],[' ','RUN',' ','PASS',' ','TOTAL'],[' ',runPlays,' ',passPlays,' ',totalPlays],[' ',runPercent,' ', passPercent,' ',' '],[' ',' ',' ',' ',' ',' ']] 
 	bigList += resultingList   
-    with open('motions_dl.csv','w') as csvfile:
+    with open('Generated_Reports/motions_dl.csv','w') as csvfile:
 	writer = csv.writer(csvfile)
 	writer.writerows(bigList)
     csvfile.close()
@@ -182,7 +182,7 @@ def backfieldDownload(INPUT):
 	count = 0
 	resultingList = [[backfield,' ',' ',' ',' ',' '],[' ','RUN',' ','PASS',' ','TOTAL'],[' ',runPlays,' ',passPlays,' ',totalPlays],[' ',runPercent,' ',passPercent,' ',' '],[' ',' ',' ',' ',' ',' ']]
 	bigList += resultingList
-    with open('backfield_dl.csv','w') as csvfile:
+    with open('Generated_Reports/backfield_dl.csv','w') as csvfile:
 	writer = csv.writer(csvfile)
 	writer.writerows(bigList)
     csvfile.close()
@@ -236,8 +236,8 @@ def inventoryDownload(INPUT):
 	newCount = 1
 	for dictionary1 in extraList:
 	    genplay = dictionary1['List']
-	    genplayCount = dictionary['Count']
-	    genplayTotal = dictionary['Num']
+	    genplayCount = dictionary1['Count']
+	    genplayTotal = dictionary1['Num']
 	    genplayString = genplayCount+' of '+stringTotalPlays
 	    tempList = [[' ',' ',newCount,genplay,genplayString,' ']]
 	    bigList += tempList
@@ -470,7 +470,7 @@ def reports():
             	COLS = RP_TOTALS_COLS + RP_WINS_COLS
 
 		if download == "DOWNLOAD":
-			with open('sitRPNdl.csv', 'w') as csvfile:
+			with open('Generated_Reports/sitRPNdl.csv', 'w') as csvfile:
 			    writer = csv.writer(csvfile)
 			    writer.writerows(bigList)
 			csvfile.close()		
@@ -530,70 +530,180 @@ def reports():
 	    # DROPDOWN OPTIONS FOR INVENTORIES
 	    elif select == 'overallInv': 
 		r = inventories("Plays.genFormation != 'victory'")
+		
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/OverallInventoryDl.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
+	
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
 	    # FIRST 
 	    elif select == 'first': 
 		r = inventories("Plays.down = 1")
+
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/firstDL.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
+
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
 	    # SECOND
 	    elif select == 'second_13': 
 		r = inventories("Plays.down = 2 and Plays.dist >= 1 and Plays.dist <= 3")
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/secondShortDL.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
+
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
 	    elif select == 'second_46': 
 		r = inventories("Plays.down = 2 and Plays.dist >= 4 and Plays.dist <= 6")
+
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/secondMidDl.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
+
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
 	    elif select == 'second_710': 
 		r = inventories("Plays.down = 2 and Plays.dist >= 7 and Plays.dist <= 10")
+
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/secondLongDL.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
+
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
 	    elif select == 'second_11': 
+
 		r = inventories("Plays.down = 2 and Plays.dist >= 11")
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/second11DL.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
+
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
  	    # THIRD
 	    elif select == 'third_12': 
 		r = inventories("Plays.down = 3 and Plays.dist >= 1 and Plays.dist <= 2")
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/thirdShortDL.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
+
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
 	    elif select == 'third_3': 
 		r = inventories("Plays.down = 3 and Plays.dist = 3")
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/third3DL.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
 	    elif select == 'third_46': 
 		r = inventories("Plays.down = 3 and Plays.dist >= 4 and Plays.dist <= 6")
+
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/thirdMidDL.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
 	    elif select == 'third_710': 
 		r = inventories("Plays.down = 3 and Plays.dist >= 7 and Plays.dist <= 10")
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/thirdLongDL.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
+
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
 	    elif select == 'third_11': 
 		r = inventories("Plays.down = 3 and Plays.dist >= 11")
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/third11DL.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
 	    # FOURTH
 	    elif select == 'fourth_13': 
 		r = inventories("Plays.down = 4 and Plays.dist >= 1 and Plays.dist <= 3")
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/fourthShortDL.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
 	    elif select == 'fourth_46': 
 		r = inventories("Plays.down = 4 and Plays.dist >= 4 and Plays.dist <= 6")
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/fourthMidDL.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
 	    elif select == 'fourth_710': 
 		r = inventories("Plays.down = 4 and Plays.dist >= 7 and Plays.dist <= 10")
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/fourthLongDL.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
 	    elif select == 'fourth_11': 
 		r = inventories("Plays.down = 4 and Plays.dist >= 11")
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/fourth11DL.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
 	    elif select == 'fifth': 
 		r = inventories("Plays.down = 5")
+		if download == "DOWNLOAD":
+			d  = inventoryDownload(r)
+			with open('Generated_Reports/fifthDL.csv', 'w') as csvfile:
+			    writer = csv.writer(csvfile)
+			    writer.writerows(d)
+			csvfile.close()	
 		return render_template('inventories.html', data=r[0], runs=r[1], passes=r[2], total=r[3], content_type='application/json')
 
 
@@ -680,4 +790,4 @@ if __name__ == "__main__":
         exit(1)
     PORT = sys.argv[1]
     app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-    app.run(host='0.0.0.0', port=PORT, threaded=True)
+    app.run(host='0.0.0.0' ,port=PORT, threaded=True)
