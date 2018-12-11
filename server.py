@@ -191,6 +191,51 @@ def sitRPNDownload(INPUT):
     returnedList = [[' ', 'Count', 'Percent', 'W/L', 'Percent'], ['R', runString, runPercent, runWinString, runWinPercent], ['P', passString, passPercent, passWinString, passWinPercent]]
     return returnedList
 
+def motionsDownload(INPUT):
+    bigList = []
+    for item in INPUT:
+	motion = item[0]
+	count = 0
+	for thing in item[1]:
+	    if count == 0:
+		totalPlays = thing['TOTAL']
+		runPlays = thing['RUN']
+		passPlays = thing['PASS']
+		count += 1
+	    else:
+		runPercent = thing['RUN']
+		passPercent = thing['PASS']
+	count = 0
+	resultingList = [[motion,' ',' ',' ',' ',' '],[' ','RUN',' ','PASS',' ','TOTAL'],[' ',runPlays,' ',passPlays,' ',totalPlays],[' ',runPercent,' 'passPercent,' ',' '],[' ',' ',' ',' ',' ',' ']]
+	bigList += resultingList   
+    with open('motions_dl.csv','w') as csvfile:
+	writer = csv.writer(csvfile)
+	writer.writerows(bigList)
+    csvfile.close()
+
+
+def backfieldDownload(INPUT):
+    bigList = []
+    for item in INPUT:
+        backfield = item[0]
+        count = 0
+        for thing in item[1]:
+	    if count == 0:
+		totalPlays = thing['TOTAL']
+		runPlays = thing['RUN']
+		passPlays = thing['PASS']
+		count += 1
+	    else:
+		runPercent = thing['RUN']
+		passPercent = thing['PASS']
+	count = 0
+	resultingList = [[backfield,' ',' ',' ',' ',' '],[' ','RUN',' ','PASS',' ','TOTAL'],[' ',runPlays,' ',passPlays,' ',totalPlays],[' ',runPercent,' ',passPercent,' ',' '],[' ',' ',' ',' ',' ',' ']]
+	bigList += resultingList
+    with open('backfield_dl.csv','w') as csvfile:
+	writer = csv.writer(csvfile)
+	writer.writerows(bigList)
+    csvfile.close()
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -263,7 +308,7 @@ def reports():
 
                 COLS = RP_TOTALS_COLS + RP_WINS_COLS
                 zipdata = zip(totalsResp, winsResp)
-		
+		print(zipdata)		
 		if download == "DOWNLOAD":
 			print("DOWNLOADING TOTALRPN")
 			totalRPNDownload(zipdata)
@@ -428,7 +473,7 @@ def reports():
             	COLS = RP_TOTALS_COLS + RP_WINS_COLS
 
 		if download == "DOWNLOAD":
-			print("DOWNLOADING TOTALRPN")
+			print("DOWNLOADING SITRPN")
 			with open('sitRPNdl.csv', 'w') as csvfile:
 			    writer = csv.writer(csvfile)
 			    writer.writerows(bigList)
@@ -454,6 +499,7 @@ def reports():
 			d[name] = resp
 			queries.append(resp)
 		data = zip(b, queries)
+		#backfieldDownload(data)
 		return render_template('motions.html', d=d, m=b, data=data, cols=MOTION_TABLE_COLS, content_type='application/json')
 
 
@@ -474,8 +520,6 @@ def reports():
                     queries.append(resp)
 
 		data = zip(m, queries)
-		print("motion data")
-		print(data[0])
 
                 return render_template('motions.html', d=d,m=m, data=data, cols=MOTION_TABLE_COLS, content_type='application/json')
 
