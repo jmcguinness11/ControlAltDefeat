@@ -310,7 +310,7 @@ def reports():
 
                 COLS = RP_TOTALS_COLS + RP_WINS_COLS
                 zipdata = zip(totalsResp, winsResp)
-		print(zipdata)		
+		#print(zipdata)		
 		if download == "DOWNLOAD":
 			totalRPNDownload(zipdata)
 
