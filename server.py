@@ -187,6 +187,64 @@ def backfieldDownload(INPUT):
 	writer.writerows(bigList)
     csvfile.close()
 
+def inventoryDownload(INPUT):
+    GENFORMS = INPUT[0]
+    RUNS = INPUT[1]
+    PASSES = INPUT[2]
+    TOTAL = INPUT[3]
+    bigList = []
+    extraList = []
+    tempList = []
+    count = 1
+    for item in GENFORMS:
+	genform = item['List']
+	genformCount = item['Count']
+	genformPercent = item['Percent']
+	genformString = genformCount+' of '+TOTAL
+	extraList = RUNS.get(genform)
+	resultingList = [[count, genform,' ',' ',genformString,genformPercent]]
+	count += 1
+	bigList += resultingList
+	totalPlays = 0
+	newInt = 0
+	for thing in extraList:
+	    newInt = int(thing['Count'])
+	    totalPlays += newInt
+	stringTotalPlays = str(totalPlays)
+	tempString = stringTotalPlays+' of '+genformCount
+	genformCountInt = int(genformCount)
+	tempList = [[' ',' ','R',' ',tempString,totalPlays/genformCountInt]]
+	bigList += tempList
+	newCount = 1
+	for dictionary in extraList:
+	    genplay = dictionary['List']
+	    genplayCount = dictionary['Count']
+	    genplayTotal = dictionary['Num']
+	    genplayString = genplayCount+' of '+stringTotalPlays
+	    tempList = [[' ',' ',newCount,genplay,genplayString,' ']]
+	    bigList += tempList
+	    newCount += 1
+	extraList = PASSES.get(genform)
+	totalPlays = 0
+	for thing1 in extraList:
+	    newInt = int(thing1['Count'])
+	    totalPlays += newInt
+	stringTotalPlays = str(totalPlays)
+	tempString = stringTotalPlays+' of '+genformCount
+	tempList = [[' ',' ','P',' ',tempString, totalPlays/genformCountInt]]
+	bigList += tempList
+	newCount = 1
+	for dictionary1 in extraList:
+	    genplay = dictionary1['List']
+	    genplayCount = dictionary['Count']
+	    genplayTotal = dictionary['Num']
+	    genplayString = genplayCount+' of '+stringTotalPlays
+	    tempList = [[' ',' ',newCount,genplay,genplayString,' ']]
+	    bigList += tempList
+	    newCount += 1
+    return bigList
+
+
 app = Flask(__name__)
 
 @app.route("/")
