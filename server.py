@@ -217,9 +217,12 @@ def drives():
             select = request.form.get("selectGame")
             seriesQuery = "SELECT DISTINCT series from Events where game=\'" + str(select) + "\' ORDER BY series ASC"
             totalSeriesNums = queryFormatted(SERIES_COLS, seriesQuery)
+            print(totalSeriesNums)
 
 	    seriesResults = []
             for t in totalSeriesNums:
+                if 'series' not in t.keys():
+                    continue
                 playquery = "SELECT down, dist, rp, fieldPos, gain, result FROM Plays, Events WHERE Plays.event_id = Events.id and Events.game=\'" + str(select) + "\' and Events.series=" + t['series']
                 re = queryFormatted(DRIVE_COLS, playquery)
 		for r in re:
