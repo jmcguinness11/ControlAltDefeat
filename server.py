@@ -7,62 +7,14 @@ import itertools
 import collections
 import csv
 
+from queries import *
+
 #global variables for column names
 PLAYER_COLS = ['name', 'position', 'playerTag', 'height', 'weight', 'active']
 PLAYERS_GET_QUERY = "SELECT * FROM Players WHERE active=1;"
 DRIVE_COLS = ['Down', 'Dist', 'Run/Pass', 'FieldPos', 'Gain', 'Result', 'Explosive']
 EVENTS_COLS = ['id', 'game']
 SERIES_COLS = ['series']
-
-########## QUERIES FOR REPORTS ##########
-
-# ex. format totals query with "and Plays.down = 2 and Plays.dist >= 1 and Plays.dist <= 3"
-# ex format wins query with "and Plays.down = 2 and Plays.dist >= 1 and Plays.dist <= 3"
-RP_TOTALS_COLS = ['RP', 'PlayCount', 'PlayTotal', 'PlayPercent']
-RP_WINS_COLS = ['RP', 'WinCount', 'TotalRP', 'WinPercent']
-
-TOTALS_QUERY_DOWNS = "(SELECT  Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, CONCAT(TRUNCATE(100*count(Plays.rp)/max(tot.c), 2), '%') as PlayPercent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory' {0}) tot,  (select rp, count(*) as 'Wins'from Plays where winP like 'Y' group by rp) wins WHERE  Plays.genFormation != 'victory' {0} and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT  Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, CONCAT(TRUNCATE(100*count(Plays.rp)/max(tot.c), 2), '%') as Percent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory' {0}) tot WHERE  Plays.genFormation != 'victory' {0} and Plays.rp like 'N' GROUP BY Plays.rp);"
-
-
-ALL_TOTALS_QUERY = "(SELECT  Plays.rp as 'RP', count(Plays.rp) as 'PlayCount', max(tot.c) as PlayTotal, CONCAT(TRUNCATE(100*count(Plays.rp)/max(tot.c), 2), '%') as PlayPercent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory') tot,  (select rp, count(*) as 'Wins'from Plays where winP like 'Y'group by rp) wins WHERE  Plays.genFormation != 'victory' and wins.rp = Plays.rp GROUP BY Plays.rp) UNION ALL (SELECT  Plays.rp as 'RP', count(Plays.rp) as 'Count', max(tot.c) as Total, CONCAT(TRUNCATE(100*count(Plays.rp)/max(tot.c), 2), '%') as Percent FROM  Plays,  (select count(*) as c from Plays where genFormation != 'victory') tot WHERE  Plays.genFormation != 'victory' and Plays.rp like 'N' GROUP BY Plays.rp) ;"
-
-# for sitrp
-WINS_QUERY_DOWNS = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', totalRP.Count as 'TotalRP',  CONCAT(TRUNCATE(100*count(Plays.rp)/totalRP.Count, 2), '%') as WinPercent from Plays, (select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y' {0}) tot, (select Plays.rp, count(Plays.rp) as Count from Plays where Plays.genFormation != 'victory' {0} and Plays.rp != 'N' group by Plays.rp) totalRP where Plays.genFormation != 'victory' {0} and Plays.winP like 'Y' and totalRP.rp = Plays.rp group by Plays.rp UNION ALL select '-' as RP, '-' as WinCount,'-' as TotalRP, '-' as WinPercent;"
-
-WINS_QUERY = "select Plays.rp as 'RP', count(Plays.rp) as 'WinCount', totalRP.Count as 'TotalRP', CONCAT(TRUNCATE(100*count(Plays.rp)/totalRP.Count, 2), '%') as WinPercent from Plays, (select count(*) as c from Plays where genFormation != 'victory' and winP like 'Y') tot, (select Plays.rp, count(Plays.rp) as Count from Plays where Plays.genFormation != 'victory'and Plays.rp != 'N' group by Plays.rp) totalRP where Plays.genFormation != 'victory' and Plays.winP like 'Y' and totalRP.rp = Plays.rp group by Plays.rp UNION ALL select '-' as RP,'-' as WinCount,'-' as TotalRP,'-' as WinPercent;"
-
-# MOTION
-
-ALL_MOTION_COLS = ['Motion']
-ALL_MOTIONS_QUERY = "select motions.List as Motion from (select distinct motion_shift as 'List', count(*) as 'rcount' from Plays where motion_shift != 'NULL' group by motion_shift order by count(*) desc) motions;"
-
-# format motion_query with "oregon" to get table for specific motion name
-MOTION_TABLE_COLS = ['RUN', 'PASS', 'TOTAL']
-MOTION_QUERY = "select runs.r as RUN, pass.p as PASS, total.tot as TOTAL from  (select count(*) as tot from Plays where motion_shift = {0} and rp != 'n') total, (select count(*) as r from Plays where motion_shift = {0} and rp = 'r') runs, (select count(*) as p from Plays where motion_shift = {0} and rp = 'p') pass UNION ALL select CONCAT(TRUNCATE(runs.r/total.tot*100, 2), '%') as RUN, CONCAT(TRUNCATE(runs.r/total.tot*100, 2), '%') as PASS, '-' as TOTAL from  (select count(*) as tot from Plays where motion_shift = {0} and rp != 'n') total, (select count(*) as r from Plays where motion_shift = {0} and rp = 'r') runs, (select count(*) as p from Plays where motion_shift = {0} and rp = 'p') pass;"
-
-# BACKFIELDS
-
-ALL_BACKFIELD_COLS = ['Backfield']
-ALL_BACKFIELD_QUERY = "select distinct backfield as Backfield from Plays where  backfield != 'NULL' group by backfield order by count(*) desc;"
-
-# format motion_query with "oregon" to get table for specific motion name
-BACKFIELD_TABLE_COLS = ['RUN', 'PASS', 'TOTAL']
-BACKFIELD_QUERY = "select runs.r as RUN, pass.p as PASS, total.tot as TOTAL from  (select count(*) as tot from Plays where backfield = {0} and rp != 'n') total, (select count(*) as r from Plays where backfield = {0} and rp = 'r') runs, (select count(*) as p from Plays where backfield = {0} and rp = 'p') pass UNION ALL  select CONCAT(TRUNCATE(runs.r/total.tot*100, 2), '%') as RUN, CONCAT(TRUNCATE(pass.p/total.tot*100, 2), '%') as PASS, '-' as TOTAL from  (select count(*) as tot from Plays where backfield = {0} and rp != 'n') total, (select count(*) as r from Plays where backfield = {0} and rp = 'r') runs, (select count(*) as p from Plays where backfield = {0} and rp = 'p') pass;"
-
-
-# get downs for 'where down = x and dist <= ...' 
-
-#DOWNS_QUERY = "select distinct Plays.genFormation as 'List', count(Plays.down) as 'Count', CONCAT(TRUNCATE((count(Plays.down)/tot.t)*100, 2), '%') as Percent from Plays, (select 'Total', count(*) as 't' from Plays where {0}) tot where {0}  group by Plays.genFormation " # fill in 'where down = {1 and dist = 5}
-
-DOWNS_QUERY = "select distinct Plays.genFormation as 'List', count(Plays.down) as 'Count', CONCAT(TRUNCATE((count(Plays.down)/tot.t)*100, 2), '%') as Percent from Plays, (select 'Total', count(*) as 't' from Plays where Plays.genFormation != 'victory' and {0}) tot where Plays.genFormation != 'victory' and {0} group by Plays.genFormation order by count(*) desc;"
-
-TOTALS_QUERY = "select count(*) as 't' from Plays where {0};"
-
-# query to get running and passing drives for each GENFORMATION
-	# fill in with: {genFormation}, {R or P}, {down and distance}
-GEN_FORMATION = "select distinct Plays.genPlay as 'List', count(*) as 'Count', totals.Total as Num from Plays, (select count(*) as Total from Plays where Plays.genFormation = {0}  and Plays.rp = {1} and {2}) totals where Plays.genFormation = {0} and Plays.rp = {1} and {2} group by Plays.genPlay order by count(*) desc;"
-
-############################################################
 
 #register exit function
 def exitFunc(db):
@@ -83,7 +35,6 @@ def queryFormatted(colNames, query):
         row_dict = {}
         for k, col in enumerate(row):
 	    if col:
-		#print(k, col)
                 col = str(col)
                 row_dict[colNames[k]] = col.decode('ascii', 'ignore').encode('ascii')
         res_list.append(row_dict)
@@ -246,9 +197,6 @@ def main():
 def home():
     return render_template('index.html')
 
-
-
-#TODO - eventually change to "drives"
 @app.route("/drives", methods=['GET', 'POST'])
 def drives():
     # Search query
@@ -259,7 +207,6 @@ def drives():
         for a in allGames:
             if a['game'] not in gameList:
                 gameList.append(a['game'])
-	print(gameList)
         return render_template('drives.html', result=gameList, content_type='application/json')
 
     form = request.form.get("form_type")
@@ -271,20 +218,19 @@ def drives():
 
 	    seriesResults = []
             for t in totalSeriesNums:
+                if 'series' not in t.keys():
+                    continue
                 playquery = "SELECT down, dist, rp, fieldPos, gain, result FROM Plays, Events WHERE Plays.event_id = Events.id and Events.game=\'" + str(select) + "\' and Events.series=" + t['series']
                 re = queryFormatted(DRIVE_COLS, playquery)
 		for r in re:
 		    r['Series'] = t['series']
                 seriesResults.append(re)
-	    print(seriesResults)
             return render_template('drives.html', data=seriesResults, content_type='application/json')
 
 
 ############################################################
 @app.route("/reports", methods=['POST', 'GET'])
 def reports():
-
-    print("entered reports")
 
     if request.method == "GET": # load queries
         return render_template('reports.html', result=[], content_type='application/json')
@@ -297,11 +243,9 @@ def reports():
         if form == 'GENERATE_REPORT':
             select = request.form.get("selectReport")
 
-            print("selected dropdown value: " + str(select))
             # run query based on dropdown value
 
             if select == "totalRPN": # totalRPN
-                print("####### TOTAL RPN #######")
 
                 totalsResp = queryFormatted(RP_TOTALS_COLS, ALL_TOTALS_QUERY)
                 winsResp = queryFormatted(RP_WINS_COLS, WINS_QUERY)
@@ -310,14 +254,12 @@ def reports():
                 zipdata = zip(totalsResp, winsResp)
 		print(zipdata)		
 		if download == "DOWNLOAD":
-			print("DOWNLOADING TOTALRPN")
 			totalRPNDownload(zipdata)
 
                 return render_template('reports.html', data=zipdata, cols=COLS, content_type='application/json')
 
 
             elif select == 'sitRP': 
-                print("####### SITUATIONAL RP #######")
 
 		# first down
                 first_totals_resp = queryFormatted(RP_TOTALS_COLS, TOTALS_QUERY_DOWNS.format("and Plays.down = 1") )
@@ -442,15 +384,12 @@ def reports():
 		blueList = sitRPNDownload(blue_zip)
 
 		bigList = firstList + second_short + second_mid + second_long + second_11 + third_short + third_3 + third_mid + third_long + third_11 + fourth_short + fourth_mid + fourth_long + fourth_11 + fifthList + hredList + redList + whiteList + blackList + blueList
-		print(bigList)
 
 		# initialize dictionary to pass to html
 		d = collections.OrderedDict()
 		d["1st Down"] = first_zip
 		d["2nd and Short (1-3)"] = second_short_zip
 		
-		print("SITUATIONAL RP DATA")
-
 		d["2nd and Mid (4-6)"] = second_mid_zip
 		d["2nd and Long (7-10)"] = second_long_zip
 		d["2nd and 11+"] = second_11_zip
@@ -473,7 +412,6 @@ def reports():
             	COLS = RP_TOTALS_COLS + RP_WINS_COLS
 
 		if download == "DOWNLOAD":
-			print("DOWNLOADING SITRPN")
 			with open('sitRPNdl.csv', 'w') as csvfile:
 			    writer = csv.writer(csvfile)
 			    writer.writerows(bigList)
@@ -482,10 +420,8 @@ def reports():
 
 
 	    elif select == 'backfields':
-		print("###BACKFIELDS#####")
 		backResp = queryFormatted(ALL_BACKFIELD_COLS, ALL_BACKFIELD_QUERY)
 
-		print(backResp)
 		b = []
 		queries = []
 		d = {}
@@ -499,12 +435,10 @@ def reports():
 			d[name] = resp
 			queries.append(resp)
 		data = zip(b, queries)
-		#backfieldDownload(data)
 		return render_template('motions.html', d=d, m=b, data=data, cols=MOTION_TABLE_COLS, content_type='application/json')
 
 
             elif select == 'motions':
-                print("####### MOTIONS #######")
                 motionResp = queryFormatted(ALL_MOTION_COLS, ALL_MOTIONS_QUERY)
                 m = []
                 queries = []
@@ -600,10 +534,8 @@ def reports():
 @app.route("/players", methods=['POST', 'GET'])
 def players():
 
-    print("entered players")
     #r = dictionary returned from database query
     r = queryFormatted(PLAYER_COLS, PLAYERS_GET_QUERY)
-    print(r)
 
     if request.method == "GET": # load queries
         display = [record for record in r if record["active"] == "1"]
@@ -611,11 +543,9 @@ def players():
         return render_template('players.html', result=display, content_type='application/json')
 
     form = request.form.get("form_type") # hidden input to specify which form: edit, delete, insert
-    print("FORM: " + form)
 
     ### EDIT
     if form == "EDIT":
-        print("ENTERED EDIT")
         name = request.form.get("name")
         position = request.form.get("position")
         playerTag = request.form.get("playerTag")
@@ -627,11 +557,14 @@ def players():
         query = 'UPDATE Players SET name="{}", position="{}", playerTag="{}", ' \
                 'height="{}", weight="{}", active={} WHERE playerTag="{}";'.format(
                 name, position, playerTag, height, weight, active, playerTag)
+        
+        try:
+            cur.execute(query)
+            cur.fetchall()
+        except:
+            flash("Invalid attribute entered - database not updated")
 
-        cur.execute(query)
-        cur.fetchall()
         r = queryFormatted(PLAYER_COLS, PLAYERS_GET_QUERY)
-
         display = [record for record in r]
 
         return render_template('players.html', result=display, content_type='application/json')
@@ -639,7 +572,6 @@ def players():
 
     ### INSERT - gets values from form
     elif form == "INSERT":
-        print("ENTERED INSERT")
         temp = {}
         insert_name = request.form.get("name")
         values = ', '.join(['"' + insert_name + '"',
@@ -649,12 +581,13 @@ def players():
                             request.form.get("weight"),
                             request.form.get("active")])
         query = 'INSERT INTO Players VALUES (' + values + ');'
-        print(query)
 
-        print("Player to insert: " + insert_name) # debug
+        try:
+            cur.execute(query)
+            cur.fetchall()
+        except:
+            flash("Invalid attribute entered - database not updated")
 
-        cur.execute(query)
-        cur.fetchall()
         r = queryFormatted(PLAYER_COLS, PLAYERS_GET_QUERY)
         display = [record for record in r]
 
@@ -663,7 +596,6 @@ def players():
 
     ### DELETE players - update where playerTag = xxx
     elif form == "DELETE":
-        print("ENTERED DELETE")
         playerTag = request.form.get("deletePlayer")   # get playerTag of row to delete
         query = 'UPDATE Players SET active=0 WHERE playerTag="{}";'.format(playerTag)
         cur.execute(query)
@@ -680,4 +612,5 @@ if __name__ == "__main__":
         print("Usage: python server.py PORT")
         exit(1)
     PORT = sys.argv[1]
+    app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
     app.run(host='0.0.0.0', port=PORT, threaded=True)
