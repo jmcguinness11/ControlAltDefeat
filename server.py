@@ -157,7 +157,7 @@ def motionsDownload(INPUT):
 		runPercent = thing['RUN']
 		passPercent = thing['PASS']
 	count = 0
-	resultingList = [[motion,' ',' ',' ',' ',' '],[' ','RUN',' ','PASS',' ','TOTAL'],[' ',runPlays,' ',passPlays,' ',totalPlays],[' ',runPercent,' 'passPercent,' ',' '],[' ',' ',' ',' ',' ',' ']]
+	resultingList = [[motion,' ',' ',' ',' ',' '],[' ','RUN',' ','PASS',' ','TOTAL'],[' ',runPlays,' ',passPlays,' ',totalPlays],[' ',runPercent,' ', passPercent,' ',' '],[' ',' ',' ',' ',' ',' ']] 
 	bigList += resultingList   
     with open('motions_dl.csv','w') as csvfile:
 	writer = csv.writer(csvfile)
@@ -493,6 +493,11 @@ def reports():
 			d[name] = resp
 			queries.append(resp)
 		data = zip(b, queries)
+
+		if download == "DOWNLOAD":
+			backfieldDownload(data)
+
+
 		return render_template('motions.html', d=d, m=b, data=data, cols=MOTION_TABLE_COLS, content_type='application/json')
 
 
@@ -512,6 +517,10 @@ def reports():
                     queries.append(resp)
 
 		data = zip(m, queries)
+
+		if download == "DOWNLOAD":
+			motionsDownload(data)
+
 
                 return render_template('motions.html', d=d,m=m, data=data, cols=MOTION_TABLE_COLS, content_type='application/json')
 
